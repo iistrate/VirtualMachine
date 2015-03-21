@@ -1,3 +1,8 @@
+#
+#   Virtual Machine
+#   has: Stack, Instruction
+#
+
 from Stack import *
 
 class VirtualMachine(object):
