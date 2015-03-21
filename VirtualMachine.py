@@ -6,11 +6,12 @@
 from Stack import *
 
 class VirtualMachine(object):
-    def __init__(self):
-        self.m_Stack = Stack()
+    def __init__(self, filename):
+        self.__m_Stack = Stack()
+        self.__m_File = open(filename, 'r')
 
     def run(self):
-        self.m_Stack.push(3)
-        print(self.m_Stack.getPointer)
-        print(self.m_Stack.pop())
-        print(self.m_Stack.getPointer)
+        self.__m_Stack.push(3)
+        print(self.__m_Stack.getPointer)
+        print(self.__m_Stack.pop())
+        print(self.__m_Stack.getPointer)

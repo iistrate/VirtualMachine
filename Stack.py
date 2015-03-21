@@ -12,6 +12,6 @@ class Stack(object):
         if not (self.__m_pointer - 1 < 0): self.__m_pointer -= 1
         return self.__m_contents.pop()
     @property
-    def getPointer(self):
+    def getPointer(self): 
         return self.__m_pointer
 
