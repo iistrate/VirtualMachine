@@ -25,6 +25,9 @@
     <Compile Include="Main.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Stack.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="VirtualMachine.py" />
   </ItemGroup>
   <PropertyGroup>
