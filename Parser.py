@@ -1,3 +1,7 @@
+
+from Globals import *
+from os import path
+
 class Parser(object):
     """Parses a single .vm file"""
     def __init__(self, filename):
@@ -6,7 +10,14 @@ class Parser(object):
         self.__m_rawCommand = 0
         self.__m_cursor = 0
 
+        #populate rawCommands
         self.fileToList()
+
+    def __str__(self):
+        rep = ""
+        for command in self.__m_rawCommands:
+            rep += "Command is: {}\n".format(command) 
+        return rep
 
     def fileToList(self):
         for line in self.__m_file:

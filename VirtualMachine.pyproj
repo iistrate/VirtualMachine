@@ -28,6 +28,9 @@
     <Compile Include="Main.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Parser.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Stack.py">
       <SubType>Code</SubType>
     </Compile>

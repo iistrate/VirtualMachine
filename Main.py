@@ -9,15 +9,14 @@ from os import path
 
 def main():
     #open file
-    try:
-        argv[1] = "SimpleAdd" #comment line when done
-        #force .vm extension
-        userInput = argv[1] + ".vm" if not (argv[1][-3:] is ".vm") else argv[1]
-        #check if file exists
-        path.isfile(userInput)
-    except:
-        raise FileNotFoundError("Please enter correct filename")
-    finally:
+    argv = list(range(2)) #comment line when done
+    argv[1] = "SimpleAdd" #comment line when done
+    #force .vm extension
+    userInput = argv[1] + ".vm" if not (argv[1][-3:] == ".vm") else argv[1]
+
+    if not (path.isfile(userInput)): 
+        print("Please enter correct filename")
+    else:
         VM = VirtualMachine(userInput)
         VM.run()
 
