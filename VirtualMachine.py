@@ -13,3 +13,9 @@ class VirtualMachine(object):
 
     def run(self):
         print(self.__m_Parser)
+        self.__m_Parser.advance()
+        print(self.__m_Parser.getRawCommand())
+        self.__m_Parser.advance()
+        print(self.__m_Parser.getRawCommand())
+        self.__m_Parser.advance()
+        print(self.__m_Parser.getRawCommand())        

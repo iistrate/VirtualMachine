@@ -1,19 +1,15 @@
 
 from Globals import *
 from os import path
-from Assoc import *
 
 class Parser(object):
     """Parses a single .vm file"""
     def __init__(self, filename):
         self.__m_file = open(filename, 'r')
         self.__m_rawCommands = []
-        self.__m_rawCommand = 0
+        self.__m_rawCommand = []
         self.__m_cursor = 0
-        self.__m_commandTable = []
 
-        #get command table
-        self.populateCmdTable()
         #populate rawCommands
         self.fileToList()
 
@@ -39,29 +35,42 @@ class Parser(object):
         if self.__m_cursor != len(self.__m_rawCommands): return True
         else: return False
     
-    #read the next raw command
+    #read the next raw command line
     def advance(self):
         if self.hasMoreCommands():
-            self.__m_rawCommands[self.__m_cursor]
+            #grab the first line
+            self.__m_rawCommand = self.__m_rawCommands[self.__m_cursor].split()
             #advance cursor
             self.__m_cursor += 1
 
-    def populateCmdTable(self):
-        self.__m_commandTable.append(Assoc("add", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("sub", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("neg", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("eq", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("gt", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("lt", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("and", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("or", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("not", C_ARITHMETIC))
-        self.__m_commandTable.append(Assoc("push", C_PUSH))
-        self.__m_commandTable.append(Assoc("pop", C_POP))
-        self.__m_commandTable.append(Assoc("label", C_LABEL))
-        self.__m_commandTable.append(Assoc("goto", C_GOTO))
-        self.__m_commandTable.append(Assoc("if-goto", C_IF))
-        self.__m_commandTable.append(Assoc("function", C_FUNCTION))
-        self.__m_commandTable.append(Assoc("call", C_CALL))
-        self.__m_commandTable.append(Assoc("return", C_RETURN))
+    #get command type; set command
+    def commandType(self):
+        for command in commandTable:
+            if self.__m_rawCommand[0] == command.getKey:
+                #return it
+                return command.getValue
 
+    #returns first argument of command
+    def arg1(self):
+        type = self.commandType() 
+        #if return don't return anything
+        if type == C_RETURN:
+            return
+        #if arithmetic return the actual command
+        if type == C_ARITHMETIC:
+            return self.__m_rawCommand[0]
+        else:
+            #return argument
+            return self.__m_rawCommand[1]
+
+    #returns second argument of command
+    def arg2(self):
+        type = self.commandType() 
+        if type in (C_POP, C_PUSH, C_FUNCTION, C_CALL):
+            return self.__m_rawCommand[2] 
+
+
+
+    #get raw command
+    def getRawCommand(self):
+        return self.__m_rawCommand
