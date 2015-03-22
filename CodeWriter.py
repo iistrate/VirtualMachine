@@ -35,6 +35,23 @@ class CodeWriter(object):
         if segment == "constant":
             #if constant then add the actual value
             g_Stack.push(index)
+    
+    #writing to file
+    def writeACommand(self, address):
+        self.__m_outFile.writelines('@' + address + '\n')
+
+    def writeLCommand(self, label):
+        self.__m_outFile.writelines('(' + label + ')')
+
+    def writeCCommand(self, dest, comp, jump):
+        if dest:
+            self.__m_outFile.writelines(dest + "=")
+        if comp:
+            self.__m_outFile.writelines(comp)
+        if jump:
+            self.__m_outFile.writelines(";" + jump)
+        self.__m_outFile.writelines("\n")
+
 
     #close resources
     def close(self):
