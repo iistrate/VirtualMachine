@@ -25,40 +25,38 @@ class CodeWriter(object):
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
         if command == "add":
-            x = g_Stack.pop()
-            self.writeACommand(x) #@value
-            self.writeCCommand('D', 'A', None) #@D=A
-            y = g_Stack.pop()
-            self.writeACommand(y)  #@value
-            self.writeCCommand('A', 'A+D', None) #@A=A+D
-            add = int(x) + int(y)
-            g_Stack.push(add)
-        elif command == "sub":
-            x = g_Stack.pop()
-            self.writeACommand(x) #@value
-            self.writeCCommand('D', 'A', None) #@D=A
-            y = g_Stack.pop()
-            self.writeACommand(y)  #@value
-            self.writeCCommand('A', 'A-D', None) #@A=A-D
-            add = int(x) - int(y)
-            g_Stack.push(add)
-        elif command == "neg":
-            x = g_Stack.pop()
-            self.writeACommand(x) #@value
-            self.writeCCommand('A', '-A', None) #@A=-A
-            neg = (-1) * int(x)
-            g_Stack.push(neg)
+            pass
 
     #write assembly for push or pop
     def writePushPop(self, command, segment, index):
-        #see if segment is a constant
-        if segment == "constant":
-            #if constant then add the actual value
-            g_Stack.push(index)
-    
+        #if constant then push the actual value
+        if command == C_PUSH:
+            if segment == "constant": 
+                #load into A
+                self.writeACommand(str(index)) #@value
+                #copy A to D
+                self.writeCCommand("D", "A", None) #D=A
+                #load stack pointer
+                self.writeACommand("SP") #@SP
+                #point to D
+                self.writeCCommand("M", "D", None) #M=D
+                #increment stack pointer
+            self.incStackP()
+        elif command == C_POP:
+            pass
+
+    #inc stack pointer
+    def incStackP(self):
+        self.writeACommand("SP")
+        self.writeCCommand("M", "M+1", None)
+    #dec stack pointer
+    def decStackP(self):
+        self.writeACommand("SP")
+        self.writeCCommand("M", "M-1", None)
+
     #writing to file
     def writeACommand(self, address):
-        self.__m_outFile.writelines('@' + address + '\n')
+        self.__m_outFile.writelines('@' + str(address) + '\n')
 
     def writeLCommand(self, label):
         self.__m_outFile.writelines('(' + label + ')')

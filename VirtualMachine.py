@@ -15,13 +15,12 @@ class VirtualMachine(object):
         while self.__m_Parser.hasMoreCommands:
             #advance through commands
             self.__m_Parser.advance()
-
             #get command and args and write assembly code for it
             cmdType = self.__m_Parser.commandType
             if cmdType == C_ARITHMETIC:
                 self.__m_CodeWriter.writeArithmetic(self.__m_Parser.arg1())
             elif cmdType in (C_PUSH, C_POP):
-                self.__m_CodeWriter.writePushPop(self.__m_Parser.getRawCommand()[0], self.__m_Parser.arg1(), self.__m_Parser.arg2()) 
+                self.__m_CodeWriter.writePushPop(cmdType, self.__m_Parser.arg1(), self.__m_Parser.arg2()) 
 
             #test case
             print(self.__m_Parser.getRawCommand())
