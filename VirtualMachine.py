@@ -25,5 +25,10 @@ class VirtualMachine(object):
 
             #test case
             print(self.__m_Parser.getRawCommand())
-            print("Arg1 is {}, Arg2 is {}".format(self.__m_Parser.arg1(), self.__m_Parser.arg2()))        
+            #print("Arg1 is {}, Arg2 is {}".format(self.__m_Parser.arg1(), self.__m_Parser.arg2()))        
             #end test
+
+        #close and free resources
+        self.__m_CodeWriter.close()
+        #print contents of out file
+        print(self.__m_CodeWriter)

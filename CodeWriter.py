@@ -8,6 +8,7 @@ class CodeWriter(object):
         filename = filename[:-2] 
         filename = filename + "asm"
 
+        self.__m_filename = filename
         self.__m_outFile = open(filename, 'w')
         self.__m_started = False
     
@@ -15,19 +16,38 @@ class CodeWriter(object):
     def setFileName(self):
         self.__m_started = True
 
+    def __str__(self):
+        rep = ""
+        for line in open(self.__m_filename, 'r'):
+            rep += line
+        return rep
+
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
         if command == "add":
-            #test stack
-            print(g_Stack)
-            #end test
             x = g_Stack.pop()
+            self.writeACommand(x) #@value
+            self.writeCCommand('D', 'A', None) #@D=A
             y = g_Stack.pop()
+            self.writeACommand(y)  #@value
+            self.writeCCommand('A', 'A+D', None) #@A=A+D
             add = int(x) + int(y)
             g_Stack.push(add)
-            #test stack
-            print(g_Stack)
-            #end test
+        elif command == "sub":
+            x = g_Stack.pop()
+            self.writeACommand(x) #@value
+            self.writeCCommand('D', 'A', None) #@D=A
+            y = g_Stack.pop()
+            self.writeACommand(y)  #@value
+            self.writeCCommand('A', 'A-D', None) #@A=A-D
+            add = int(x) - int(y)
+            g_Stack.push(add)
+        elif command == "neg":
+            x = g_Stack.pop()
+            self.writeACommand(x) #@value
+            self.writeCCommand('A', '-A', None) #@A=-A
+            neg = (-1) * int(x)
+            g_Stack.push(neg)
 
     #write assembly for push or pop
     def writePushPop(self, command, segment, index):
