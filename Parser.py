@@ -31,19 +31,21 @@ class Parser(object):
                 self.__m_rawCommands.append(line)
 
     #check if we have more untranslated commands
+    @property
     def hasMoreCommands(self):
         if self.__m_cursor != len(self.__m_rawCommands): return True
         else: return False
     
     #read the next raw command line
     def advance(self):
-        if self.hasMoreCommands():
+        if self.hasMoreCommands:
             #grab the first line
             self.__m_rawCommand = self.__m_rawCommands[self.__m_cursor].split()
             #advance cursor
             self.__m_cursor += 1
 
     #get command type; set command
+    @property
     def commandType(self):
         for command in commandTable:
             if self.__m_rawCommand[0] == command.getKey:
@@ -52,12 +54,12 @@ class Parser(object):
 
     #returns first argument of command
     def arg1(self):
-        type = self.commandType() 
+        ctype = self.commandType
         #if return don't return anything
-        if type == C_RETURN:
+        if ctype == C_RETURN:
             return
         #if arithmetic return the actual command
-        if type == C_ARITHMETIC:
+        if ctype == C_ARITHMETIC:
             return self.__m_rawCommand[0]
         else:
             #return argument
@@ -65,8 +67,8 @@ class Parser(object):
 
     #returns second argument of command
     def arg2(self):
-        type = self.commandType() 
-        if type in (C_POP, C_PUSH, C_FUNCTION, C_CALL):
+        ctype = self.commandType 
+        if ctype in (C_POP, C_PUSH, C_FUNCTION, C_CALL):
             return self.__m_rawCommand[2] 
 
 

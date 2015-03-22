@@ -12,10 +12,12 @@ class Assoc(object):
     #key value sets and gets
     def setValue(self, value):
         self.__m_value = value
+    @property
     def getValue(self):
         return self.__m_value;
 
     def setKey(self, key):
         self.__m_key = key
+    @property
     def getKey(self):
         return self.__m_key
