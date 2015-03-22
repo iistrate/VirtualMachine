@@ -2,10 +2,25 @@
 #   Holds our constants, and globals
 #
 
-from Assoc import *  
+from Assoc import *
+from Stack import *
+
+#globally accessible stack
+g_Stack = Stack()  
+
+
+#registers
+SP = 0 #RAM[0]
+LCL = 1 #RAM[1]
+ARG = 2 #RAM[2]
+THIS = 3 #RAM[3]
+THAT = 4 #RAM[4]
+#RAM[5..12]
+TEMP = 5 #starts at 5 ends at 12  
+#RAM[13..15]
+GEN_PURPOSE = 13 #starts at 13 ends at 15 
 
 #command types
-
 C_ARITHMETIC = 0
 C_PUSH = 1
 C_POP = 2
