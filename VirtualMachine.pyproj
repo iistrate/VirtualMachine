@@ -22,7 +22,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Instruction.py">
+    <Compile Include="Globals.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Assoc.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Main.py">

@@ -1,8 +1,8 @@
-class Instruction(object):
-    """Holds Instruction Key and Value"""
-    def __init__(self):
-        self.__m_key = 0
-        self.__m_value = 0
+class Assoc(object):
+    """Holds Assoc Key and Value"""
+    def __init__(self, key, value):
+        self.__m_key = key
+        self.__m_value = value
     
     #print override
     def __str__(self):
