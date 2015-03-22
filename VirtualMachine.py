@@ -8,7 +8,7 @@ from Stack import *
 class VirtualMachine(object):
     def __init__(self, filename):
         self.__m_Stack = Stack()
-        self.__m_File = open(filename, 'r')
+        self.__m_Parser = Parser(filename)
 
     def run(self):
         self.__m_Stack.push(3)
