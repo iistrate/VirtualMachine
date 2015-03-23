@@ -114,10 +114,15 @@ class CodeWriter(object):
             self.pop("A")
             self.writeCCommand("D", "D|A", None) #D=D&A
             self.push()
-        elif command == "not":
+        elif command == "neg":
             #pop x to D
             self.pop("D")
             self.writeCCommand("D", "-D", None) #D=-D
+            self.push()
+        elif command == "not":
+            #pop x to D
+            self.pop("D")
+            self.writeCCommand("D", "!D", None) #D=!D
             self.push()
 
     #write assembly for push or pop
