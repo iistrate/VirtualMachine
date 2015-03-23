@@ -25,6 +25,15 @@ class CodeWriter(object):
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
         if command == "add":
+            #pop x to D
+            self.pop("D")
+            #pop y to A
+            self.pop("A")
+            #add x and y
+            self.writeCCommand("D", "D+A", None) #A=A+D
+            #push add
+            self.push()
+        elif command == "eq":
             pass
 
     #write assembly for push or pop
@@ -38,12 +47,28 @@ class CodeWriter(object):
                 self.writeCCommand("D", "A", None) #D=A
                 #load stack pointer
                 self.writeACommand("SP") #@SP
-                #point to D
+                self.writeCCommand("A", "M", None) #A=M
                 self.writeCCommand("M", "D", None) #M=D
-                #increment stack pointer
+            #increment stack pointer
             self.incStackP()
         elif command == C_POP:
             pass
+            #decrement stack pointer
+            #self.decStackP()
+
+    #push to stack
+    def push(self):
+        self.writeACommand("SP") #@SP
+        self.writeCCommand("A", "M", None) #A=M
+        self.writeCCommand("M", "D", None) #M=D
+        self.incStackP()
+
+    #pop
+    def pop(self, dest):
+        self.decStackP()
+        self.writeACommand("SP") #@SP
+        self.writeCCommand("A", "M", None) #A=M
+        self.writeCCommand(dest, "M", None) #D=M
 
     #inc stack pointer
     def incStackP(self):
