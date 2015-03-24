@@ -26,104 +26,70 @@ class CodeWriter(object):
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
         if command == "add":
-            #pop x to D
-            self.pop("D")
-            #pop y to A
-            self.pop("A")
-            #add x and y
-            self.writeCCommand("D", "D+A", None) #D=D+A
-            #push add
+            self.doBinary("D+A") #D=D+A
             self.push()
         elif command == "sub":
-            #pop x to D
-            self.pop("D")
-            #pop y to A
-            self.pop("A")
-            #add x and y
-            self.writeCCommand("D", "D-A", None) #D=D-A
-            #push add
+            self.doBinary("D-A") #D=D-A
             self.push()
         elif command == "eq":
-            #pop x to D
-            self.pop("D")
-            #pop y to A
-            self.pop("A")
-            #sub x and y
-            self.writeCCommand("D", "D-A", None) #D=D-A
-            #labels
-            self.writeACommand("EQUAL" + str(self.__m_labelCounter)) #@EQUAL$i
-            self.writeCCommand("D", None, "JEQ") #D;JEQ
-            self.writeACommand("NOT_EQUAL" + str(self.__m_labelCounter)) #@NOT_EQUAL$i
-            self.writeCCommand("0", None, "JMP") #0;JNE
-            self.writeLCommand("EQUAL" + str(self.__m_labelCounter)) #(EQUAL$i)
-            #put -1
-            self.valToStack("-1")
-            self.writeLCommand("NOT_EQUAL" + str(self.__m_labelCounter)) #(NOT_EQUAL$i)
-            #put 0
-            self.valToStack("0")
-            self.__m_labelCounter += 1
+            #dest jump with label
+            self.doDestJump("D", "JEQ")
         elif command == "gt":            
-            #pop x to D
-            self.pop("D")
-            #pop y to A
-            self.pop("A")
-            #sub x and y
-            self.writeCCommand("D", "D-A", None) #D=D-A
-            #labels
-            self.writeACommand("LESS_THAN" + str(self.__m_labelCounter)) #@LESS$i
-            self.writeCCommand("D", None, "JLT") #D;JLT
-            self.writeACommand("GREATER_THAN" + str(self.__m_labelCounter)) #@GREATER_THAN$i
-            self.writeCCommand("0", None, "JMP") #0;JMP
-            self.writeLCommand("LESS_THAN" + str(self.__m_labelCounter)) #(LESS_THAN$i)
-            #put -1
-            self.valToStack("0")
-            self.writeLCommand("GREATER_THAN" + str(self.__m_labelCounter)) #(GREATER_THAN$i)
-            #put 0
-            self.valToStack("-1")
-            self.__m_labelCounter += 1
+            #dest jump with label
+            self.doDestJump("D", "JGT")
         elif command == "lt":
-            #pop x to D
-            self.pop("D")
-            #pop y to A
-            self.pop("A")
-            #sub x and y
-            self.writeCCommand("D", "D-A", None) #D=D-A
-            #labels
-            self.writeACommand("LESS_THAN" + str(self.__m_labelCounter)) #@LESS$i
-            self.writeCCommand("D", None, "JLT") #D;JLT
-            self.writeACommand("GREATER_THAN" + str(self.__m_labelCounter)) #@GREATER_THAN$i
-            self.writeCCommand("0", None, "JMP") #0;JMP
-            self.writeLCommand("LESS_THAN" + str(self.__m_labelCounter)) #(LESS_THAN$i)
-            #put -1
-            self.valToStack("-1")
-            self.writeLCommand("GREATER_THAN" + str(self.__m_labelCounter)) #(GREATER_THAN$i)
-            #put 0
-            self.valToStack("0")
-            self.__m_labelCounter += 1
+            #dest jump with label
+            self.doDestJump("D", "JLT")
         elif command == "and":
-            #pop x to D
-            self.pop("D")
-            #pop y to A
-            self.pop("A")
-            self.writeCCommand("D", "D&A", None) #D=D&A
+            self.doBinary("D&A") #D=D&A
             self.push()
         elif command == "or":
-            #pop x to D
-            self.pop("D")
-            #pop y to A
-            self.pop("A")
-            self.writeCCommand("D", "D|A", None) #D=D&A
+            self.doBinary("D|A") #D=D&A
             self.push()
         elif command == "neg":
-            #pop x to D
-            self.pop("D")
-            self.writeCCommand("D", "-D", None) #D=-D
+            self.doUnary("-D") #D=-D
             self.push()
         elif command == "not":
-            #pop x to D
-            self.pop("D")
-            self.writeCCommand("D", "!D", None) #D=!D
+            self.doUnary("!D") #D=!D
             self.push()
+    
+    def doDestJump(self, dest, jump):
+        #do sub first
+        self.doBinary("D-A") #D=D-A
+        #condition
+        self.writeACommand("CMPTRUE" + str(self.__m_labelCounter)) #@GENERATED$i
+        self.writeCCommand(dest, None, jump) #D;JEQ
+        #if not condition
+        self.writeACommand("CMPFALSE" + str(self.__m_labelCounter)) #@GENERATED$i
+        self.writeCCommand("0", None, "JMP") #0;JMP
+        #labels
+        self.writeLCommand("CMPFALSE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
+        self.valToStack("0")
+        #end symbol
+        self.writeACommand("END" + str(self.__m_labelCounter)) #@GENERATED$i
+        self.writeCCommand("0", None, "JMP") #0;JMP
+        #labels
+        self.writeLCommand("CMPTRUE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
+        self.valToStack("-1")
+        #label end
+        self.writeLCommand("END" + str(self.__m_labelCounter)) #(LESS_THAN$i)
+        self.__m_labelCounter += 1
+
+    def doUnary(self, comp):
+        #pop x to D
+        self.pop("D")
+        self.writeCCommand("D", comp, None)
+
+    def doBinary(self, comp):
+        #pop x to D
+        self.pop("D")
+        #pop y to A
+        self.pop("A")            
+        #add/sub.. x and y
+        self.writeCCommand("D", comp, None)
+
+    def writeLabelSymbol(self):
+        self.writeACommand("Label" + str(self.__m_labelCounter)) #@Label($i)
 
     #write assembly for push or pop
     def writePushPop(self, command, segment, index):
