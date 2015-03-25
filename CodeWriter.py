@@ -23,6 +23,14 @@ class CodeWriter(object):
             rep += line
         return rep
 
+    def writeInit(self):
+        self.writeACommand("@256")
+        self.writeCCommand("D", "A", None) #D=A
+        self.writeACommand("@SP")
+        self.writeCCommand("A", "D", None) #A=D
+        #cals Sys.init
+
+    
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
         if command == "add":
@@ -53,26 +61,27 @@ class CodeWriter(object):
             self.doUnary("!D") #D=!D
             self.push()
     
+    #add labels and symbols for dest jumps
     def doDestJump(self, dest, jump):
         #do sub first
         self.doBinary("D-A") #D=D-A
-        #condition
+        #condition @
         self.writeACommand("CMPTRUE" + str(self.__m_labelCounter)) #@GENERATED$i
         self.writeCCommand(dest, None, jump) #D;JEQ
-        #if not condition
+        #if not condition @
         self.writeACommand("CMPFALSE" + str(self.__m_labelCounter)) #@GENERATED$i
         self.writeCCommand("0", None, "JMP") #0;JMP
-        #labels
-        self.writeLCommand("CMPFALSE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
+        #labels ()
+        self.writeLabel("CMPFALSE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
         self.valToStack("0")
-        #end symbol
+        #end @symbol
         self.writeACommand("END" + str(self.__m_labelCounter)) #@GENERATED$i
         self.writeCCommand("0", None, "JMP") #0;JMP
-        #labels
-        self.writeLCommand("CMPTRUE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
+        #labels ()
+        self.writeLabel("CMPTRUE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
         self.valToStack("-1")
-        #label end
-        self.writeLCommand("END" + str(self.__m_labelCounter)) #(LESS_THAN$i)
+        #label end ()
+        self.writeLabel("END" + str(self.__m_labelCounter)) #(LESS_THAN$i) 
         self.__m_labelCounter += 1
 
     def doUnary(self, comp):
@@ -146,7 +155,7 @@ class CodeWriter(object):
         self.__m_outFile.writelines('@' + str(address) + '\n')
     
     #Label
-    def writeLCommand(self, label):
+    def writeLabel(self, label):
         self.__m_outFile.writelines('(' + label + ')' + "\n")
     
     #Dest=Comp;Jump

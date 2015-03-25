@@ -1,6 +1,5 @@
 
 from Globals import *
-from os import path
 
 class Parser(object):
     """Parses a single .vm file"""
@@ -70,8 +69,6 @@ class Parser(object):
         ctype = self.commandType 
         if ctype in (C_POP, C_PUSH, C_FUNCTION, C_CALL):
             return self.__m_rawCommand[2] 
-
-
 
     #get raw command
     def getRawCommand(self):

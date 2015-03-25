@@ -30,4 +30,4 @@ class VirtualMachine(object):
         #close and free resources
         self.__m_CodeWriter.close()
         #print contents of out file
-        print(self.__m_CodeWriter)
+        #print(self.__m_CodeWriter)
