@@ -58,17 +58,21 @@ class CodeWriter(object):
         if command == C_PUSH:
             if segment == "constant": 
                 self.pushConstToStack(index)
+            elif segment == "local":
+                pass
         elif command == C_POP:
-            #decrement stack pointer
-            #self.decStackP()
-            pass
+            if segment == "local":
+                #pop off to @R1 
+                print(index)
+                self.popToRam("R1", index)
+               
     
     #add labels and symbols for dest jumps
     def doDestJump(self, dest, jump):
         #do sub first
         self.doBinary("D-A") #D=D-A
         #load to D
-        self.pop("D")
+        self.popToRegister("D")
         #condition @
         self.writeLabelSymbol("CMPTRUE")
         self.writeCCommand(dest, None, jump) #D;JEQ
@@ -85,15 +89,15 @@ class CodeWriter(object):
 
     def doUnary(self, comp):
         #pop x to D
-        self.pop("D")
+        self.popToRegister("D")
         self.writeCCommand("D", comp, None)
         self.pushDtoStack()
 
     def doBinary(self, comp):
         #pop x to D
-        self.pop("D")
+        self.popToRegister("D")
         #pop y to A
-        self.pop("A")            
+        self.popToRegister("A")            
         #add/sub.. x and y
         self.writeCCommand("D", comp, None)
         self.pushDtoStack()
@@ -108,7 +112,7 @@ class CodeWriter(object):
     
     def writeIf(self, label):
         #load stack pointer with 0 or -1
-        self.pop()
+        self.popToRegister("D")
         self.writeLabelSymbol(label)        
         self.writeCCommand("D", None, "JNE") #if D is < 0 or D is > 0
        
@@ -135,14 +139,32 @@ class CodeWriter(object):
         self.writeCCommand("A", "M", None) #A=M
         self.writeCCommand("M", "D", None) #M=D
 
-
-
-    #pop to dest
-    def pop(self, dest):
+    #pop stack content to A
+    def pop(self):
         self.decStackP()
+        #load stack address into A
         self.writeACommand("SP") #@SP
+        #load stack content into A
         self.writeCCommand("A", "M", None) #A=M
-        self.writeCCommand(dest, "M", None) #D||A=M
+
+    #pop to registers A or D
+    def popToRegister(self, dest):
+        self.pop()
+        self.writeCCommand(dest, "M", None) #D|A=M
+
+    #pop to RAM
+    def popToRam(self, dest, index):
+        #load stack content to D
+        self.popToRegister("D")
+        #load ram address into A
+        self.writeACommand(dest) #@R1-15
+        #load ram contents into A
+        self.writeCCommand("A", "M", None)        
+
+
+    ##
+    # Stack Ops
+    ##
 
     #inc stack pointer
     def incStackP(self):

@@ -13,8 +13,8 @@ g_Stack = Stack()
 SP = 0 #RAM[0]
 LCL = 1 #RAM[1]
 ARG = 2 #RAM[2]
-THIS = 3 #RAM[3]
-THAT = 4 #RAM[4]
+THIS = 3 #RAM[3] POINTER1
+THAT = 4 #RAM[4] POINTER2
 #RAM[5..12]
 TEMP = 5 #starts at 5 ends at 12  
 #RAM[13..15]
