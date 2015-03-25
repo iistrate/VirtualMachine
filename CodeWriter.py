@@ -12,6 +12,9 @@ class CodeWriter(object):
         self.__m_outFile = open(filename, 'w')
         self.__m_started = False
         self.__m_labelCounter = 1
+
+        #init stack to 256 and call main
+        #self.writeInit()
     
     #translation of a VM file started     
     def setFileName(self):
@@ -25,64 +28,66 @@ class CodeWriter(object):
 
     def writeInit(self):
         #make stack pointer start at 256
-        self.valToStack(256)
+        self.pushConstToStack(256)
         #cals Sys.init
     
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
         if command == "add":
             self.doBinary("D+A") #D=D+A
-            self.push()
         elif command == "sub":
             self.doBinary("D-A") #D=D-A
-            self.push()
         elif command == "eq":
-            #dest jump with label
             self.doDestJump("D", "JEQ")
         elif command == "gt":            
-            #dest jump with label
             self.doDestJump("D", "JGT")
         elif command == "lt":
-            #dest jump with label
             self.doDestJump("D", "JLT")
         elif command == "and":
             self.doBinary("D&A") #D=D&A
-            self.push()
         elif command == "or":
             self.doBinary("D|A") #D=D&A
-            self.push()
         elif command == "neg":
             self.doUnary("-D") #D=-D
-            self.push()
         elif command == "not":
             self.doUnary("!D") #D=!D
-            self.push()
+
+    #write assembly for push or pop
+    def writePushPop(self, command, segment, index):
+        #if constant then push the actual value
+        if command == C_PUSH:
+            if segment == "constant": 
+                self.pushConstToStack(index)
+        elif command == C_POP:
+            #decrement stack pointer
+            #self.decStackP()
+            pass
     
     #add labels and symbols for dest jumps
     def doDestJump(self, dest, jump):
         #do sub first
         self.doBinary("D-A") #D=D-A
+        #load to D
+        self.pop("D")
         #condition @
-        self.writeACommand("CMPTRUE" + str(self.__m_labelCounter)) #@GENERATED$i
+        self.writeLabelSymbol("CMPTRUE")
         self.writeCCommand(dest, None, jump) #D;JEQ
+        #if here means no jump
+        self.pushConstToStack("0")
         #unconditional jump to label
-        self.writeGoto("CMPFALSE" + str(self.__m_labelCounter))
+        self.writeGoto("END")
         #labels ()
-        self.writeLabel("CMPFALSE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
-        self.valToStack("0")
-        #unconditional jump to label
-        self.writeGoto("END" + str(self.__m_labelCounter))
-        #labels ()
-        self.writeLabel("CMPTRUE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
-        self.valToStack("-1")
+        self.writeLabel("CMPTRUE")
+        self.pushConstToStack("-1")
         #label end ()
-        self.writeLabel("END" + str(self.__m_labelCounter)) #(LESS_THAN$i) 
+        self.writeLabel("END")
         self.__m_labelCounter += 1
 
     def doUnary(self, comp):
         #pop x to D
         self.pop("D")
         self.writeCCommand("D", comp, None)
+        self.pushDtoStack()
 
     def doBinary(self, comp):
         #pop x to D
@@ -91,58 +96,53 @@ class CodeWriter(object):
         self.pop("A")            
         #add/sub.. x and y
         self.writeCCommand("D", comp, None)
+        self.pushDtoStack()
 
-    def writeLabelSymbol(self):
-        self.writeACommand("Label" + str(self.__m_labelCounter)) #@Label($i)
+    def writeLabelSymbol(self, label):
+        self.writeACommand(label + str(self.__m_labelCounter)) #@Label($i)
 
     #unconditional jump to label
     def writeGoto(self, label):
-        self.writeACommand(label)
-        self.writeCCommand(0, None, "JMP")
-
-    #write assembly for push or pop
-    def writePushPop(self, command, segment, index):
-        #if constant then push the actual value
-        if command == C_PUSH:
-            if segment == "constant": 
-                #load into A
-                self.writeACommand(str(index)) #@value
-                #copy A to D
-                self.writeCCommand("D", "A", None) #D=A
-                self.push()
-            #increment stack pointer
-            self.incStackP()
-        elif command == C_POP:
-            pass
-            #decrement stack pointer
-            #self.decStackP()
+        self.writeLabelSymbol(label)
+        self.writeCCommand("0", None, "JMP")
     
-    def valToStack(self, val):
+    def writeIf(self, label):
+        #load stack pointer with 0 or -1
+        self.pop()
+        self.writeLabelSymbol(label)        
+        self.writeCCommand("D", None, "JNE") #if D is < 0 or D is > 0
+       
+    #push a value to stack; increments stack pointer
+    def pushConstToStack(self, val):
         #only good for -1, 1, and 0
-        if val in (-1, 1, 0):
+        if val in ("-1", "1", "0"):
             self.writeACommand("SP") #@SP
             self.writeCCommand("A", "M", None) #A=M
+            #load value straight to stack
             self.writeCCommand("M", val, None) #M=val
         #else we have to use registers
         else:
-            self.writeACommand("256")
+            #load value into A
+            self.writeACommand(val)
+            #load value into D
             self.writeCCommand("D", "A", None) #D=A
-            self.writeACommand("SP")
-            self.writeCCommand("A", "D", None) #A=D
-        
-    #push to stack
-    def push(self):
-        self.writeACommand("SP") #@SP
+            self.pushDtoStack()
+        self.incStackP()
+    
+    #push D to stack
+    def pushDtoStack(self):
+        self.writeACommand("SP")
         self.writeCCommand("A", "M", None) #A=M
         self.writeCCommand("M", "D", None) #M=D
-        self.incStackP()
+
+
 
     #pop to dest
     def pop(self, dest):
         self.decStackP()
         self.writeACommand("SP") #@SP
         self.writeCCommand("A", "M", None) #A=M
-        self.writeCCommand(dest, "M", None) #D=M
+        self.writeCCommand(dest, "M", None) #D||A=M
 
     #inc stack pointer
     def incStackP(self):
@@ -161,7 +161,10 @@ class CodeWriter(object):
     #Address
     def writeACommand(self, address):
         self.__m_outFile.writelines('@' + str(address) + '\n')
-    
+ 
+    #Label
+    def writeLabel(self, label):
+        self.__m_outFile.writelines('(' + label + str(self.__m_labelCounter) +  ')' + "\n")           
     
     #Dest=Comp;Jump
     def writeCCommand(self, dest, comp, jump):
