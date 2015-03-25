@@ -24,12 +24,11 @@ class CodeWriter(object):
         return rep
 
     def writeInit(self):
-        self.writeACommand("@256")
-        self.writeCCommand("D", "A", None) #D=A
-        self.writeACommand("@SP")
-        self.writeCCommand("A", "D", None) #A=D
+        #make stack pointer start at 256
+        self.valToStack(256)
         #cals Sys.init
 
+    
     
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
@@ -118,9 +117,17 @@ class CodeWriter(object):
             #self.decStackP()
     
     def valToStack(self, val):
-        self.writeACommand("SP") #@SP
-        self.writeCCommand("A", "M", None) #A=M
-        self.writeCCommand("M", val, None) #M=val
+        #only good for -1, 1, and 0
+        if val in (-1, 1, 0):
+            self.writeACommand("SP") #@SP
+            self.writeCCommand("A", "M", None) #A=M
+            self.writeCCommand("M", val, None) #M=val
+        #else we have to use registers
+        else:
+            self.writeACommand("@256")
+            self.writeCCommand("D", "A", None) #D=A
+            self.writeACommand("@SP")
+            self.writeCCommand("A", "D", None) #A=D
         
     #push to stack
     def push(self):
