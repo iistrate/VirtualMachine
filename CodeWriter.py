@@ -27,8 +27,6 @@ class CodeWriter(object):
         #make stack pointer start at 256
         self.valToStack(256)
         #cals Sys.init
-
-    
     
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
@@ -67,15 +65,13 @@ class CodeWriter(object):
         #condition @
         self.writeACommand("CMPTRUE" + str(self.__m_labelCounter)) #@GENERATED$i
         self.writeCCommand(dest, None, jump) #D;JEQ
-        #if not condition @
-        self.writeACommand("CMPFALSE" + str(self.__m_labelCounter)) #@GENERATED$i
-        self.writeCCommand("0", None, "JMP") #0;JMP
+        #unconditional jump to label
+        self.writeGoto("CMPFALSE" + str(self.__m_labelCounter))
         #labels ()
         self.writeLabel("CMPFALSE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
         self.valToStack("0")
-        #end @symbol
-        self.writeACommand("END" + str(self.__m_labelCounter)) #@GENERATED$i
-        self.writeCCommand("0", None, "JMP") #0;JMP
+        #unconditional jump to label
+        self.writeGoto("END" + str(self.__m_labelCounter))
         #labels ()
         self.writeLabel("CMPTRUE" + str(self.__m_labelCounter)) #(LESS_THAN$i)
         self.valToStack("-1")
@@ -98,6 +94,11 @@ class CodeWriter(object):
 
     def writeLabelSymbol(self):
         self.writeACommand("Label" + str(self.__m_labelCounter)) #@Label($i)
+
+    #unconditional jump to label
+    def writeGoto(self, label):
+        self.writeACommand(label)
+        self.writeCCommand(0, None, "JMP")
 
     #write assembly for push or pop
     def writePushPop(self, command, segment, index):
@@ -124,9 +125,9 @@ class CodeWriter(object):
             self.writeCCommand("M", val, None) #M=val
         #else we have to use registers
         else:
-            self.writeACommand("@256")
+            self.writeACommand("256")
             self.writeCCommand("D", "A", None) #D=A
-            self.writeACommand("@SP")
+            self.writeACommand("SP")
             self.writeCCommand("A", "D", None) #A=D
         
     #push to stack
@@ -161,9 +162,6 @@ class CodeWriter(object):
     def writeACommand(self, address):
         self.__m_outFile.writelines('@' + str(address) + '\n')
     
-    #Label
-    def writeLabel(self, label):
-        self.__m_outFile.writelines('(' + label + ')' + "\n")
     
     #Dest=Comp;Jump
     def writeCCommand(self, dest, comp, jump):
