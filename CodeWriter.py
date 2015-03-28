@@ -36,7 +36,7 @@ class CodeWriter(object):
         if command == "add":
             self.doBinary("D+A") #D=D+A
         elif command == "sub":
-            self.doBinary("D-A") #D=D-A
+            self.doBinary("A-D") #D=A-D
         elif command == "eq":
             self.doDestJump("D", "JEQ")
         elif command == "gt":            
@@ -58,17 +58,17 @@ class CodeWriter(object):
         if command == C_PUSH:
             if segment == "constant": 
                 self.pushConstToStack(index)
-            elif segment == "local":
-                pass
+            else:
+                self.pushFromRAM(segment, index)
         elif command == C_POP:
-            if segment in ("local", "this", "that", "argument", "temp"):
+            if segment != "constant" :
                 self.popToRam(segment, index)
                
     
     #add labels and symbols for dest jumps
     def doDestJump(self, dest, jump):
         #do sub first
-        self.doBinary("D-A") #D=D-A
+        self.doBinary("A-D") #D=D-A
         #load to D
         self.popToRegister("D")
         #condition @
@@ -99,6 +99,7 @@ class CodeWriter(object):
         #add/sub.. x and y
         self.writeCCommand("D", comp, None)
         self.pushDtoStack()
+        self.incStackP()
 
     def writeLabelSymbol(self, label):
         self.writeACommand(label + str(self.__m_labelCounter)) #@Label($i)
@@ -136,7 +137,6 @@ class CodeWriter(object):
         self.writeACommand("SP")
         self.writeCCommand("A", "M", None) #A=M
         self.writeCCommand("M", "D", None) #M=D
-        self.incStackP()
 
     #pop stack content to A
     def pop(self):
@@ -168,9 +168,12 @@ class CodeWriter(object):
         #load offset
         self.writeACommand(index)
         self.writeCCommand("D", "A", None) #load offset to D
-        #get local address
+        #access R+segment
         self.writeACommand(memory)
-        self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
+        if segment != "temp":
+            self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
+        else:
+            self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
         #load R13
         self.writeACommand("R13")
         self.writeCCommand("M", "D", None) #save address to R13
@@ -181,9 +184,34 @@ class CodeWriter(object):
         self.writeCCommand("A", "M", None)
         self.writeCCommand("M", "D", None)
 
-
-        
-
+    #take what is in segment + index and push it to SP
+    def pushFromRAM(self, segment, index):
+        memory = "R"
+        if segment == "local":
+            memory += str(LCL)
+        elif segment == "temp":
+            memory += str(TEMP)
+        elif segment == "this":
+            memory += str(THIS)
+        elif segment == "that":
+            memory += str(THAT)
+        elif segment == "argument":
+            memory += str(ARG)
+        #load offset
+        self.writeACommand(index)
+        self.writeCCommand("D", "A", None) #load offset to D
+        #access R+segment
+        self.writeACommand(memory)
+        if segment != "temp":
+            self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
+            self.writeCCommand("A", "D", None) #add offset to local/temp/arg address 300+offset
+            self.writeCCommand("D", "M", None) #add offset to local/temp/arg address 300+offset
+        else:
+            self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
+            self.writeCCommand("A", "D", None) #add offset to local/temp/arg address 300+offset
+            self.writeCCommand("D", "M", None) #add offset to local/temp/arg address 300+offset
+        self.pushDtoStack()
+        self.incStackP()      
 
     ##
     # Stack Ops
@@ -192,12 +220,12 @@ class CodeWriter(object):
     #inc stack pointer
     def incStackP(self):
         self.writeACommand("SP")
-        self.writeCCommand("M", "M+1", None)
+        self.writeCCommand("AM", "M+1", None)
 
     #dec stack pointer
     def decStackP(self):
         self.writeACommand("SP")
-        self.writeCCommand("M", "M-1", None)
+        self.writeCCommand("AM", "M-1", None)
 
     ##
     # Writing to file
