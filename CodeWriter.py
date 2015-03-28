@@ -61,10 +61,8 @@ class CodeWriter(object):
             elif segment == "local":
                 pass
         elif command == C_POP:
-            if segment == "local":
-                #pop off to @R1 
-                print(index)
-                self.popToRam("R1", index)
+            if segment in ("local", "this", "that", "argument", "temp"):
+                self.popToRam(segment, index)
                
     
     #add labels and symbols for dest jumps
@@ -138,6 +136,7 @@ class CodeWriter(object):
         self.writeACommand("SP")
         self.writeCCommand("A", "M", None) #A=M
         self.writeCCommand("M", "D", None) #M=D
+        self.incStackP()
 
     #pop stack content to A
     def pop(self):
@@ -153,13 +152,37 @@ class CodeWriter(object):
         self.writeCCommand(dest, "M", None) #D|A=M
 
     #pop to RAM
-    def popToRam(self, dest, index):
-        #load stack content to D
+    def popToRam(self, segment, index):
+        memory = "R"
+        if segment == "local":
+            memory += str(LCL)
+        elif segment == "temp":
+            memory += str(TEMP)
+        elif segment == "this":
+            memory += str(THIS)
+        elif segment == "that":
+            memory += str(THAT)
+        elif segment == "argument":
+            memory += str(ARG)
+
+        #load offset
+        self.writeACommand(index)
+        self.writeCCommand("D", "A", None) #load offset to D
+        #get local address
+        self.writeACommand(memory)
+        self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
+        #load R13
+        self.writeACommand("R13")
+        self.writeCCommand("M", "D", None) #save address to R13
+        #pop value to register
         self.popToRegister("D")
-        #load ram address into A
-        self.writeACommand(dest) #@R1-15
-        #load ram contents into A
-        self.writeCCommand("A", "M", None)        
+        #put D value into local/temp/arg address 300+offset
+        self.writeACommand("R13")
+        self.writeCCommand("A", "M", None)
+        self.writeCCommand("M", "D", None)
+
+
+        
 
 
     ##
@@ -189,7 +212,7 @@ class CodeWriter(object):
         self.__m_outFile.writelines('(' + label + str(self.__m_labelCounter) +  ')' + "\n")           
     
     #Dest=Comp;Jump
-    def writeCCommand(self, dest, comp, jump):
+    def writeCCommand(self, dest, comp, jump=None):
         if dest:
             dORj = "=" if not jump else ";"
             self.__m_outFile.writelines(dest + dORj)

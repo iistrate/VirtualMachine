@@ -1,29 +1,30 @@
+//push const to stack
 @15
 D=A
 @SP
 A=M
 M=D
+//increment stack
 @SP
 M=M+1
-@12
-D=A
-@SP
-A=M
+//
+// get local + offset
+// 
+@2 //offset
+D=A //offset
+@LCL
+D=M+D
+@R13 //load address of local + stuff
 M=D
-@SP
-M=M+1
+//pop to D
 @SP
 M=M-1
 @SP
 A=M
 D=M
-@SP
-M=M-1
-@SP
+//put into R13
+@R13
 A=M
-A=M
-D=D+A
-@SP
 M=D
-@SP
-M=M+1
+
+
