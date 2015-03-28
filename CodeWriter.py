@@ -150,21 +150,10 @@ class CodeWriter(object):
     def popToRegister(self, dest):
         self.pop()
         self.writeCCommand(dest, "M", None) #D|A=M
-
+    
     #pop to RAM
     def popToRam(self, segment, index):
-        memory = "R"
-        if segment == "local":
-            memory += str(LCL)
-        elif segment == "temp":
-            memory += str(TEMP)
-        elif segment == "this":
-            memory += str(THIS)
-        elif segment == "that":
-            memory += str(THAT)
-        elif segment == "argument":
-            memory += str(ARG)
-
+        memory = self.memoryType(segment)
         #load offset
         self.writeACommand(index)
         self.writeCCommand("D", "A", None) #load offset to D
@@ -186,17 +175,7 @@ class CodeWriter(object):
 
     #take what is in segment + index and push it to SP
     def pushFromRAM(self, segment, index):
-        memory = "R"
-        if segment == "local":
-            memory += str(LCL)
-        elif segment == "temp":
-            memory += str(TEMP)
-        elif segment == "this":
-            memory += str(THIS)
-        elif segment == "that":
-            memory += str(THAT)
-        elif segment == "argument":
-            memory += str(ARG)
+        memory = self.memoryType(segment)
         #load offset
         self.writeACommand(index)
         self.writeCCommand("D", "A", None) #load offset to D
@@ -204,15 +183,28 @@ class CodeWriter(object):
         self.writeACommand(memory)
         if segment != "temp":
             self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
-            self.writeCCommand("A", "D", None) #add offset to local/temp/arg address 300+offset
-            self.writeCCommand("D", "M", None) #add offset to local/temp/arg address 300+offset
         else:
             self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
-            self.writeCCommand("A", "D", None) #add offset to local/temp/arg address 300+offset
-            self.writeCCommand("D", "M", None) #add offset to local/temp/arg address 300+offset
+
+        self.writeCCommand("A", "D", None) #add offset to local/temp/arg address 300+offset
+        self.writeCCommand("D", "M", None) #add offset to local/temp/arg address 300+offset
+
         self.pushDtoStack()
         self.incStackP()      
-
+    
+    def memoryType(self, segment):
+        memory = "R"
+        if segment == "local":
+            memory += str(LCL)
+        elif segment == "temp" or segment == "pointer":
+            memory += str(TEMP)
+        elif segment == "this":
+            memory += str(THIS)
+        elif segment == "that":
+            memory += str(THAT)
+        elif segment == "argument":
+            memory += str(ARG)
+        return memory
     ##
     # Stack Ops
     ##
