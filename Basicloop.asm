@@ -127,6 +127,13 @@ A=M
 M=D
 @SP
 AM=M+1
+@SP
+AM=M-1
+@SP
+A=M
+D=M
+@LOOP_START
+D;JNE
 @0
 D=A
 @R1

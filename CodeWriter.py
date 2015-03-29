@@ -101,8 +101,9 @@ class CodeWriter(object):
         self.pushDtoStack()
         self.incStackP()
 
-    def writeLabelSymbol(self, label):
-        self.writeACommand(label + str(self.__m_labelCounter)) #@Label($i)
+    def writeLabelSymbol(self, label, autoGen = True):
+        label = label if autoGen == False else label + str(self.__m_labelCounter)
+        self.writeACommand(label) #@Label($i)
 
     #unconditional jump to label
     def writeGoto(self, label):
@@ -112,7 +113,7 @@ class CodeWriter(object):
     def writeIf(self, label):
         #load stack pointer with 0 or -1
         self.popToRegister("D")
-        self.writeLabelSymbol(label)        
+        self.writeLabelSymbol(label, False)        
         self.writeCCommand("D", None, "JNE") #if D is < 0 or D is > 0
        
     #push a value to stack; increments stack pointer

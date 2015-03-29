@@ -23,6 +23,8 @@ class VirtualMachine(object):
                 self.__m_CodeWriter.writePushPop(cmdType, self.__m_Parser.arg1(), self.__m_Parser.arg2()) 
             elif cmdType == C_LABEL:
                 self.__m_CodeWriter.writeLabel(self.__m_Parser.arg1(), False)
+            elif cmdType == C_IF_GOTO:
+                self.__m_CodeWriter.writeIf(self.__m_Parser.arg1())
 
             #test case
             print(self.__m_Parser.getRawCommand())
