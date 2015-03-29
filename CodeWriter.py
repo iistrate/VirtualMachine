@@ -153,14 +153,17 @@ class CodeWriter(object):
     
     #pop to RAM
     def popToRam(self, segment, index):
-        memory = self.memoryType(segment)
-        #load offset
-        self.writeACommand(index)
-        self.writeCCommand("D", "A", None) #load offset to D
+        memory = self.memoryType(segment) if segment != "static" else self.memoryType(segment) + str(index)
+        if segment != "static":
+            #load offset
+            self.writeACommand(index)
+            self.writeCCommand("D", "A", None) #load offset to D
         #access R+segment
         self.writeACommand(memory)
         if segment == "temp" or segment == "pointer":
            self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
+        elif segment == "static":
+           self.writeCCommand("D", "A", None) #add offset to local/temp/arg address 300+offset
         else:
              self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
         #load R13
@@ -175,14 +178,17 @@ class CodeWriter(object):
 
     #take what is in segment + index and push it to SP
     def pushFromRAM(self, segment, index):
-        memory = self.memoryType(segment)
-        #load offset
-        self.writeACommand(index)
-        self.writeCCommand("D", "A", None) #load offset to D
+        memory = self.memoryType(segment) if segment != "static" else self.memoryType(segment) + str(index)
+        if segment != "static":
+            #load offset
+            self.writeACommand(index)
+            self.writeCCommand("D", "A", None) #load offset to D
         #access R+segment
         self.writeACommand(memory)
         if segment == "temp" or segment == "pointer":
            self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
+        elif segment == "static":
+           self.writeCCommand("D", "A", None) #add offset to local/temp/arg address 300+offset
         else:
              self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
 
@@ -204,6 +210,8 @@ class CodeWriter(object):
             memory += str(THAT)
         elif segment == "argument":
             memory += str(ARG)
+        elif segment == "static":
+            memory = self.__m_filename[:-3]
         return memory
     ##
     # Stack Ops
