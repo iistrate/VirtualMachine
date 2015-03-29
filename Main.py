@@ -9,8 +9,8 @@ from os import path
 
 def main():
     #open file
-    argv = list(range(2)) #comment line when done
-    argv[1] = "StaticTest" #comment line when done
+    #argv = list(range(2)) #comment line when done
+    #argv[1] = "StaticTest" #comment line when done
     #force .vm extension
     userInput = argv[1] + ".vm" if not (argv[1][-3:] == ".vm") else argv[1]
 
