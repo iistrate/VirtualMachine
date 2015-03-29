@@ -5,10 +5,10 @@ A=M
 M=D
 @SP
 AM=M+1
-@5
+@1
 D=A
-@R1
-D=D+M
+@R3
+D=D+A
 @R13
 M=D
 @SP
@@ -17,17 +17,5 @@ AM=M-1
 A=M
 D=M
 @R13
-A=M
-M=D
-@5
-D=A
-@R1
-D=D+M //305
-A=D
-D=M
-@R13
-A=M
-M=D //305 into R13
-@SP
 A=M
 M=D

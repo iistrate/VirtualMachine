@@ -159,10 +159,10 @@ class CodeWriter(object):
         self.writeCCommand("D", "A", None) #load offset to D
         #access R+segment
         self.writeACommand(memory)
-        if segment != "temp":
-            self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
+        if segment == "temp" or segment == "pointer":
+           self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
         else:
-            self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
+             self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
         #load R13
         self.writeACommand("R13")
         self.writeCCommand("M", "D", None) #save address to R13
@@ -181,10 +181,10 @@ class CodeWriter(object):
         self.writeCCommand("D", "A", None) #load offset to D
         #access R+segment
         self.writeACommand(memory)
-        if segment != "temp":
-            self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
+        if segment == "temp" or segment == "pointer":
+           self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
         else:
-            self.writeCCommand("D", "D+A", None) #add offset to local/temp/arg address 300+offset
+             self.writeCCommand("D", "D+M", None) #add offset to local/temp/arg address 300+offset
 
         self.writeCCommand("A", "D", None) #add offset to local/temp/arg address 300+offset
         self.writeCCommand("D", "M", None) #add offset to local/temp/arg address 300+offset
@@ -196,9 +196,9 @@ class CodeWriter(object):
         memory = "R"
         if segment == "local":
             memory += str(LCL)
-        elif segment == "temp" or segment == "pointer":
+        elif segment == "temp":
             memory += str(TEMP)
-        elif segment == "this":
+        elif segment == "this" or segment == "pointer":
             memory += str(THIS)
         elif segment == "that":
             memory += str(THAT)
