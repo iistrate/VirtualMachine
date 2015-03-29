@@ -27,6 +27,13 @@ class VirtualMachine(object):
                 self.__m_CodeWriter.writeIf(self.__m_Parser.arg1())
             elif cmdType == C_GOTO:
                 self.__m_CodeWriter.writeGoto(self.__m_Parser.arg1(), False)
+            elif cmdType == C_FUNCTION:
+                self.__m_CodeWriter.writeFunction(self.__m_Parser.arg1(), self.__m_Parser.arg2())
+            elif cmdType == C_CALL:
+                self.__m_CodeWriter.writeCall(self.__m_Parser.arg1(), self.__m_Parser.arg2())
+            elif cmdType == C_RETURN:
+                self.__m_CodeWriter.writeReturn()
+
 
             #test case
             print(self.__m_Parser.getRawCommand())

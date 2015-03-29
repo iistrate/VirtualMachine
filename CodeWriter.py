@@ -30,6 +30,7 @@ class CodeWriter(object):
         #make stack pointer start at 256
         self.pushConstToStack(256)
         #cals Sys.init
+        self.writeCall("Sys.init", 0)
     
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
@@ -64,7 +65,17 @@ class CodeWriter(object):
             if segment != "constant" :
                 self.popToRam(segment, index)
                
-    
+    def writeFunction(self, name, param):
+         self.writeLabel(name, False)
+         for var in range(0, int(param)):
+             #push enough 0 constants on the stack
+             self.pushConstToStack(0)
+
+    def writeCall(self, name, param):
+        pass
+    def writeReturn(self):
+        pass
+
     #add labels and symbols for dest jumps
     def doDestJump(self, dest, jump):
         #do sub first
@@ -89,7 +100,8 @@ class CodeWriter(object):
         #pop x to D
         self.popToRegister("D")
         self.writeCCommand("D", comp, None)
-        self.pushDtoStack()
+        self.putDintoRAM("SP")
+        self.incStackP()
 
     def doBinary(self, comp):
         #pop x to D
@@ -98,7 +110,7 @@ class CodeWriter(object):
         self.popToRegister("A")            
         #add/sub.. x and y
         self.writeCCommand("D", comp, None)
-        self.pushDtoStack()
+        self.putDintoRAM("SP")
         self.incStackP()
 
     def writeLabelSymbol(self, label, autoGen = True):
@@ -130,14 +142,15 @@ class CodeWriter(object):
             self.writeACommand(val)
             #load value into D
             self.writeCCommand("D", "A", None) #D=A
-            self.pushDtoStack()
+            self.putDintoRAM("SP")
         self.incStackP()
     
-    #push D to stack
-    def pushDtoStack(self):
-        self.writeACommand("SP")
+    #push D to RAM
+    def putDintoRAM(self, ram):
+        self.writeACommand(ram)
         self.writeCCommand("A", "M", None) #A=M
         self.writeCCommand("M", "D", None) #M=D
+
 
     #pop stack content to A
     def pop(self):
@@ -173,9 +186,8 @@ class CodeWriter(object):
         #pop value to register
         self.popToRegister("D")
         #put D value into local/temp/arg address 300+offset
-        self.writeACommand("R13")
-        self.writeCCommand("A", "M", None)
-        self.writeCCommand("M", "D", None)
+        self.putDintoRAM("R13")
+
 
     #take what is in segment + index and push it to SP
     def pushFromRAM(self, segment, index):
@@ -196,7 +208,7 @@ class CodeWriter(object):
         self.writeCCommand("A", "D", None) #add offset to local/temp/arg address 300+offset
         self.writeCCommand("D", "M", None) #add offset to local/temp/arg address 300+offset
 
-        self.pushDtoStack()
+        self.putDintoRAM("SP")
         self.incStackP()      
     
     def memoryType(self, segment):
