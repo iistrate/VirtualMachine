@@ -25,6 +25,8 @@ class VirtualMachine(object):
                 self.__m_CodeWriter.writeLabel(self.__m_Parser.arg1(), False)
             elif cmdType == C_IF_GOTO:
                 self.__m_CodeWriter.writeIf(self.__m_Parser.arg1())
+            elif cmdType == C_GOTO:
+                self.__m_CodeWriter.writeGoto(self.__m_Parser.arg1(), False)
 
             #test case
             print(self.__m_Parser.getRawCommand())

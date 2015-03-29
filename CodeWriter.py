@@ -106,8 +106,8 @@ class CodeWriter(object):
         self.writeACommand(label) #@Label($i)
 
     #unconditional jump to label
-    def writeGoto(self, label):
-        self.writeLabelSymbol(label)
+    def writeGoto(self, label, autoGen = True):
+        self.writeLabelSymbol(label, autoGen)
         self.writeCCommand("0", None, "JMP")
     
     def writeIf(self, label):
