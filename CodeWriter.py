@@ -236,8 +236,9 @@ class CodeWriter(object):
         self.__m_outFile.writelines('@' + str(address) + '\n')
  
     #Label
-    def writeLabel(self, label):
-        self.__m_outFile.writelines('(' + label + str(self.__m_labelCounter) +  ')' + "\n")           
+    def writeLabel(self, label, autoGen = True):
+        label = label if autoGen == False else label + str(self.__m_labelCounter)
+        self.__m_outFile.writelines('(' + label +  ')' + "\n")           
     
     #Dest=Comp;Jump
     def writeCCommand(self, dest, comp, jump=None):

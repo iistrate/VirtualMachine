@@ -21,6 +21,8 @@ class VirtualMachine(object):
                 self.__m_CodeWriter.writeArithmetic(self.__m_Parser.arg1())
             elif cmdType in (C_PUSH, C_POP):
                 self.__m_CodeWriter.writePushPop(cmdType, self.__m_Parser.arg1(), self.__m_Parser.arg2()) 
+            elif cmdType == C_LABEL:
+                self.__m_CodeWriter.writeLabel(self.__m_Parser.arg1(), False)
 
             #test case
             print(self.__m_Parser.getRawCommand())
