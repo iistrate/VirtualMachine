@@ -66,15 +66,71 @@ class CodeWriter(object):
                 self.popToRam(segment, index)
                
     def writeFunction(self, name, param):
-         self.writeLabel(name, False)
+         self.writeLabelSymbol(name, False)
          for var in range(0, int(param)):
              #push enough 0 constants on the stack
              self.pushConstToStack(0)
 
     def writeCall(self, name, param):
-        pass
+        label = self.writeLabelSymbol("RETURN")#@label{i}
+        self.writeLabel(label)#(label{i})
+
     def writeReturn(self):
-        pass
+        #1 Frame = LCL
+        self.writeACommand("R1")
+        self.writeCCommand("D", "M") 
+        self.writeACommand("R15") #frame
+        self.writeCCommand("M", "D") #address of R1 in R13 (frame)
+        #end1
+        #2 RET = *(Frame - 5)
+        self.writeACommand("5")
+        self.writeCCommand("A", "D-A")
+        self.writeCCommand("D", "A") #de ref 312 here
+        self.writeACommand("R14") #return is R14 1000 here????
+        self.writeCCommand("M", "D")
+        #end2
+        #3 *ARG = pop()
+        self.popToRam("argument", 0)
+        #end3
+        #4 SP = ARG+1
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("M", "D")
+        self.writeACommand("SP")
+        self.writeCCommand("M", "D")
+        #end4
+        #frame
+        self.writeACommand("R15")
+        self.writeCCommand("AM", "M-1") #get content
+        self.writeCCommand("D", "M") #de ref
+        self.writeACommand("R4") #that
+        self.writeCCommand("M", "D") #bam
+        #end frame that
+        #frame this
+        self.writeACommand("R15")
+        self.writeCCommand("AM", "M-1") #get content
+        self.writeCCommand("D", "M") #de ref
+        self.writeACommand("R3") #this
+        self.writeCCommand("M", "D") #bam
+        #end frame this
+        #frame for arg
+        self.writeACommand("R15")
+        self.writeCCommand("AM", "M-1") #get content
+        self.writeCCommand("D", "M") #de ref
+        self.writeACommand("R2") #arg
+        self.writeCCommand("M", "D") #bam
+        #end frame for arg
+        #frame
+        self.writeACommand("R15")
+        self.writeCCommand("AM", "M-1") #get content
+        self.writeCCommand("D", "M") #de ref
+        self.writeACommand("R1") #local
+        self.writeCCommand("M", "D") #bam
+        #end frame for local
+        #jump to return
+        self.writeACommand("R14")
+        self.writeCCommand("A", "M") #bam
+        self.writeCCommand("0", None, "JMP")
 
     #add labels and symbols for dest jumps
     def doDestJump(self, dest, jump):
@@ -116,6 +172,7 @@ class CodeWriter(object):
     def writeLabelSymbol(self, label, autoGen = True):
         label = label if autoGen == False else label + str(self.__m_labelCounter)
         self.writeACommand(label) #@Label($i)
+        return label
 
     #unconditional jump to label
     def writeGoto(self, label, autoGen = True):
@@ -151,6 +208,11 @@ class CodeWriter(object):
         self.writeCCommand("A", "M", None) #A=M
         self.writeCCommand("M", "D", None) #M=D
 
+    #put stack value into D
+    def StackVToD(self):
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("D", "M")
 
     #pop stack content to A
     def pop(self):
