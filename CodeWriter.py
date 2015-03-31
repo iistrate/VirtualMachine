@@ -73,7 +73,40 @@ class CodeWriter(object):
 
     def writeCall(self, name, param):
         label = self.writeLabelSymbol("RETURN")#@label{i}
+        #push label
+        self.writeCCommand("D", "M") #address to D
+        self.putDintoRAM("SP")
+        self.incStackP()  
+        #end push label
+        self.pushFromRAM("local", 0)
+        self.pushFromRAM("argument", 0)
+        self.pushFromRAM("this", 0)
+        self.pushFromRAM("that", 0)
+        #1
+        self.writeACommand(str(int(param)+5))
+        self.writeCCommand("D", "A")
+        self.writeACommand("SP")
+        self.writeCCommand("AD", "A-D")
+        #e1
+        #2
+        self.writeACommand("R2")
+        self.writeCCommand("A", "D")
+        #e2
+        #3 LCL=SP
+        self.writeACommand("SP")
+        self.writeCCommand("D", "M")
+        self.writeACommand("R1")
+        self.writeCCommand("M", "D")
+        #e3
+        self.writeCCommand('0', 'JMP')
         self.writeLabel(label)#(label{i})
+
+    def writeFrame(self, register):
+        self.writeACommand("R15")
+        self.writeCCommand("AM", "M-1") #get content
+        self.writeCCommand("D", "M") #de ref
+        self.writeACommand(register)
+        self.writeCCommand("M", "D") #bam
 
     def writeReturn(self):
         #1 Frame = LCL
@@ -99,34 +132,10 @@ class CodeWriter(object):
         self.writeACommand("SP")
         self.writeCCommand("M", "D")
         #end4
-        #frame
-        self.writeACommand("R15")
-        self.writeCCommand("AM", "M-1") #get content
-        self.writeCCommand("D", "M") #de ref
-        self.writeACommand("R4") #that
-        self.writeCCommand("M", "D") #bam
-        #end frame that
-        #frame this
-        self.writeACommand("R15")
-        self.writeCCommand("AM", "M-1") #get content
-        self.writeCCommand("D", "M") #de ref
-        self.writeACommand("R3") #this
-        self.writeCCommand("M", "D") #bam
-        #end frame this
-        #frame for arg
-        self.writeACommand("R15")
-        self.writeCCommand("AM", "M-1") #get content
-        self.writeCCommand("D", "M") #de ref
-        self.writeACommand("R2") #arg
-        self.writeCCommand("M", "D") #bam
-        #end frame for arg
-        #frame
-        self.writeACommand("R15")
-        self.writeCCommand("AM", "M-1") #get content
-        self.writeCCommand("D", "M") #de ref
-        self.writeACommand("R1") #local
-        self.writeCCommand("M", "D") #bam
-        #end frame for local
+        self.writeFrame("R4") #that
+        self.writeFrame("R3") #this
+        self.writeFrame("R2") #argument       
+        self.writeFrame("R1") #local
         #jump to return
         self.writeACommand("R14")
         self.writeCCommand("A", "M") #bam
