@@ -1,20 +1,31 @@
 from Globals import *
-
+import os
 class CodeWriter(object):
     """Translates VM commands into Hack assembly code"""
 
     def __init__(self, filename):
-        #change .vm to .asm
-        filename = filename[:-2] 
-        filename = filename + "asm"
+        isDir = False
+        #cut out .vm 
+        if ".vm" in filename:
+            filename = filename[:-3] 
+        else:
+            #read until the first /
+            index = filename.find("/")
+            #filepath/filename
+            filename += filename[index+1:-1]
+            isDir = True
+
+        #add .asm
+        filename = filename + ".asm"
 
         self.__m_filename = filename
         self.__m_outFile = open(filename, 'w')
-        self.__m_started = False
         self.__m_labelCounter = 1
+        
+        if isDir:
+            #init stack to 256 and call main
+            self.writeInit()
 
-        #init stack to 256 and call main
-        #self.writeInit()
     
     #translation of a VM file started     
     def setFileName(self):
@@ -98,8 +109,9 @@ class CodeWriter(object):
         self.writeACommand("R1")
         self.writeCCommand("M", "D")
         #e3
-        self.writeCCommand('0', 'JMP')
-        self.writeLabel(label)#(label{i})
+        self.writeCCommand('0', None, 'JMP')
+        self.writeLabel(label[:-1])#(label{i})
+        self.__m_labelCounter += 1
 
     def writeFrame(self, register):
         self.writeACommand("R15")

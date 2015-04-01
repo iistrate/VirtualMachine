@@ -60,8 +60,8 @@ A=D
 D=M
 @R1
 M=D
-0=JMP
-(RETURN11)
+0;JMP
+(RETURN1)
 @1
 D=A
 @R5
@@ -87,7 +87,7 @@ A=M
 M=D
 @SP
 AM=M+1
-@RETURN1
+@RETURN2
 D=M
 @SP
 A=M
@@ -148,8 +148,8 @@ A=D
 D=M
 @R1
 M=D
-0=JMP
-(RETURN11)
+0;JMP
+(RETURN2)
 @0
 D=A
 @R5

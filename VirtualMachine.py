@@ -7,8 +7,9 @@ from Parser import *
 from CodeWriter import *
 
 class VirtualMachine(object):
-    def __init__(self, filename):
-        self.__m_Parser = Parser(filename)
+    def __init__(self, userInput):
+        self.__m_Parser = Parser(userInput)
+        filename = self.__m_Parser.getFileName()
         self.__m_CodeWriter = CodeWriter(filename)
 
     def run(self):

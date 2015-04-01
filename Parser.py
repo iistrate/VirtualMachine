@@ -1,16 +1,20 @@
 
 from Globals import *
+import os
 
 class Parser(object):
-    """Parses a single .vm file"""
-    def __init__(self, filename):
-        self.__m_file = open(filename, 'r')
+    """Parses a single .vm file or a whole directory of .vm files"""
+    def __init__(self, userInput):
         self.__m_rawCommands = []
         self.__m_rawCommand = []
         self.__m_cursor = 0
+        self.__m_finalFileName = userInput
 
         #populate rawCommands
-        self.fileToList()
+        if os.path.isfile(userInput):
+            self.fileToList(userInput)
+        else:
+            self.translateFiles(userInput)
 
     def __str__(self):
         rep = ""
@@ -18,8 +22,15 @@ class Parser(object):
             rep += "Raw command is: {}\n".format(command) 
         return rep
 
-    def fileToList(self):
-        for line in self.__m_file:
+    def translateFiles(self, dirname):
+        for fn in os.listdir(dirname):
+            if ".vm" in fn:
+                self.fileToList(dirname + fn)
+
+    def fileToList(self, filename):
+        #get all VM files
+        file = open(filename, 'r')
+        for line in file:
             #remove out comments
             indexOfComment = line.find('/')
             line = line[:indexOfComment]
@@ -28,7 +39,11 @@ class Parser(object):
             #remove empty lines
             if (line):
                 self.__m_rawCommands.append(line)
-
+    
+    #name of the final .asm file    
+    def getFileName(self):
+        return self.__m_finalFileName
+     
     #check if we have more untranslated commands
     @property
     def hasMoreCommands(self):
