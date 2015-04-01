@@ -1,16 +1,26 @@
 from Globals import *
 import os
+
 class CodeWriter(object):
     """Translates VM commands into Hack assembly code"""
 
     def __init__(self, filename):
         isDir = False
+        self.__m_path = ""
+
         #cut out .vm 
         if ".vm" in filename:
+            #read until the last /
+            index = filename.rfind("/")
+            #filepath/filename
+            self.__m_path += filename[:index+1]
+            filename = filename[index+1:]
+            #filename - .vm
             filename = filename[:-3] 
         else:
             #read until the first /
-            index = filename.find("/")
+            # directory/
+            index = filename[:-1].find("/")
             #filepath/filename
             filename += filename[index+1:-1]
             isDir = True
@@ -19,7 +29,7 @@ class CodeWriter(object):
         filename = filename + ".asm"
 
         self.__m_filename = filename
-        self.__m_outFile = open(filename, 'w')
+        self.__m_outFile = open(self.__m_path +  self.__m_filename, 'w')
         self.__m_labelCounter = 1
         
         if isDir:
@@ -33,7 +43,7 @@ class CodeWriter(object):
 
     def __str__(self):
         rep = ""
-        for line in open(self.__m_filename, 'r'):
+        for line in open(self.__m_path + self.__m_filename, 'r'):
             rep += line
         return rep
 
@@ -80,7 +90,7 @@ class CodeWriter(object):
                 self.popToRam(segment, index)
                
     def writeFunction(self, name, param):
-         self.writeLabelSymbol(name, False)
+         self.writeLabel(name, False)
          for var in range(0, int(param)):
              #push enough 0 constants on the stack
              self.pushConstToStack(0)
@@ -88,7 +98,7 @@ class CodeWriter(object):
     def writeCall(self, name, param):
         label = self.writeLabelSymbol("RETURN")#@label{i}
         #push label
-        self.writeCCommand("D", "M") #address to D
+        self.writeCCommand("D", "A") #address to D
         self.putDintoRAM("SP")
         self.incStackP()  
         #end push label
@@ -112,6 +122,7 @@ class CodeWriter(object):
         self.writeACommand("R1")
         self.writeCCommand("M", "D")
         #e3
+        self.writeACommand(name)
         self.writeCCommand('0', None, 'JMP')
         self.writeLabel(label[:-1])#(label{i})
         self.__m_labelCounter += 1
@@ -141,6 +152,9 @@ class CodeWriter(object):
         self.popToRam("argument", 0)
         #end3
         #4 SP = ARG+1
+        self.writeACommand("R2")
+        self.writeCCommand("M", "M+1")
+        self.writeCCommand("D", "M")
         self.writeACommand("SP")
         self.writeCCommand("A", "M")
         self.writeCCommand("M", "D")

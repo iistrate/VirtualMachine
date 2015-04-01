@@ -139,6 +139,9 @@ D=M
 @R13
 A=M
 M=D
+@R2
+M=M+1
+D=M
 @SP
 A=M
 M=D

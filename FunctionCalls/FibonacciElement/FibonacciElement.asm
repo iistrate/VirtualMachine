@@ -3,7 +3,7 @@ D=A
 @SP
 M=D
 @RETURN1
-D=M
+D=A
 @SP
 A=M
 M=D
@@ -63,9 +63,10 @@ A=D
 D=M
 @R1
 M=D
+@Sys.init
 0;JMP
 (RETURN1)
-@Main.fibonacci
+(Main.fibonacci)
 @0
 D=A
 @R2
@@ -165,6 +166,9 @@ D=M
 @R13
 A=M
 M=D
+@R2
+M=M+1
+D=M
 @SP
 A=M
 M=D
@@ -229,7 +233,7 @@ M=D
 @SP
 AM=M+1
 @RETURN3
-D=M
+D=A
 @SP
 A=M
 M=D
@@ -289,6 +293,7 @@ A=D
 D=M
 @R1
 M=D
+@Main.fibonacci
 0;JMP
 (RETURN3)
 @0
@@ -324,7 +329,7 @@ M=D
 @SP
 AM=M+1
 @RETURN4
-D=M
+D=A
 @SP
 A=M
 M=D
@@ -384,6 +389,7 @@ A=D
 D=M
 @R1
 M=D
+@Main.fibonacci
 0;JMP
 (RETURN4)
 @SP
@@ -425,6 +431,9 @@ D=M
 @R13
 A=M
 M=D
+@R2
+M=M+1
+D=M
 @SP
 A=M
 M=D
@@ -453,7 +462,7 @@ M=D
 @R14
 A=M
 0;JMP
-@Sys.init
+(Sys.init)
 @4
 D=A
 @SP
@@ -462,7 +471,7 @@ M=D
 @SP
 AM=M+1
 @RETURN5
-D=M
+D=A
 @SP
 A=M
 M=D
@@ -522,6 +531,7 @@ A=D
 D=M
 @R1
 M=D
+@Main.fibonacci
 0;JMP
 (RETURN5)
 (WHILE)
