@@ -23,7 +23,7 @@ class CodeWriter(object):
         self.__m_labelCounter = 1
         
         if isDir:
-            #init stack to 256 and call main
+            #init stack to 256 and call Sys
             self.writeInit()
 
     
@@ -39,7 +39,10 @@ class CodeWriter(object):
 
     def writeInit(self):
         #make stack pointer start at 256
-        self.pushConstToStack(256)
+        self.writeACommand("256")
+        self.writeCCommand("D", "A", None) #D=A
+        self.writeACommand("SP")
+        self.writeCCommand("M", "D", None) #M=D
         #cals Sys.init
         self.writeCall("Sys.init", 0)
     

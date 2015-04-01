@@ -7,13 +7,17 @@ import os
 from sys import argv
 
 def main():
-    #get argument 1
-    userInput = argv[1]
-    if os.path.isfile(userInput) or os.path.isdir(userInput):
-        VM = VirtualMachine(userInput)
-        VM.run()
+    try:
+        #get argument 1
+        userInput = argv[1]
+    except:
+        print("Error. Usage: from cmd python Main.py file.vm OR dir/subdir/")
     else:
-        print("File/dir {} not found".format(userInput))
+        if os.path.isfile(userInput) or os.path.isdir(userInput):
+            VM = VirtualMachine(userInput)
+            VM.run()
+        else:
+            print("File/dir {} not found".format(userInput))
 
 
 if __name__ == '__main__': main()

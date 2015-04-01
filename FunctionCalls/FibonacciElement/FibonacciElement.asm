@@ -1,10 +1,7 @@
 @256
 D=A
 @SP
-A=M
 M=D
-@SP
-AM=M+1
 @RETURN1
 D=M
 @SP
