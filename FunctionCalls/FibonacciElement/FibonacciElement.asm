@@ -2,6 +2,7 @@
 D=A
 @SP
 M=D
+// stack to 256, now call Sys.init 
 @RETURN1
 D=A
 @SP
@@ -56,9 +57,10 @@ AM=M+1
 @5
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
 @SP
 D=M
 @R1
@@ -286,9 +288,10 @@ AM=M+1
 @6
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
 @SP
 D=M
 @R1
@@ -382,9 +385,10 @@ AM=M+1
 @6
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
 @SP
 D=M
 @R1
@@ -524,9 +528,10 @@ AM=M+1
 @6
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
 @SP
 D=M
 @R1

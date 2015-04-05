@@ -5,7 +5,7 @@ class CodeWriter(object):
     """Translates VM commands into Hack assembly code"""
 
     def __init__(self, filename):
-        isDir = False
+        hasSys = False
         self.__m_path = ""
 
         #cut out .vm 
@@ -22,9 +22,11 @@ class CodeWriter(object):
             # directory/
             index = filename[:-1].find("/")
             #filepath/filename
-            filename += filename[index+1:-1]
-            isDir = True
-
+            self.__m_path = filename
+            filename = filename[index+1:-1]
+            if "Sys.vm" in os.listdir(self.__m_path):
+                hasSys = True
+                
         #add .asm
         filename = filename + ".asm"
 
@@ -32,9 +34,10 @@ class CodeWriter(object):
         self.__m_outFile = open(self.__m_path +  self.__m_filename, 'w')
         self.__m_labelCounter = 1
         
-        if isDir:
-            #init stack to 256 and call Sys
+        if hasSys:
+        #init stack to 256 and call Sys
             self.writeInit()
+            
 
     
     #translation of a VM file started     
@@ -54,6 +57,7 @@ class CodeWriter(object):
         self.writeACommand("SP")
         self.writeCCommand("M", "D", None) #M=D
         #cals Sys.init
+        self.writeComment("stack to 256, now call Sys.init");
         self.writeCall("Sys.init", 0)
     
     #write assembly for arithmetic commands
@@ -102,26 +106,25 @@ class CodeWriter(object):
         self.putDintoRAM("SP")
         self.incStackP()  
         #end push label
-        self.pushFromRAM("local", 0)
-        self.pushFromRAM("argument", 0)
-        self.pushFromRAM("this", 0)
-        self.pushFromRAM("that", 0)
-        #1
+        self.pushFromRAM("local", 0) #push local
+        self.pushFromRAM("argument", 0) #push arg
+        self.pushFromRAM("this", 0) #push this
+        self.pushFromRAM("that", 0) #push that
+        #ARG = (SP-n-5)
         self.writeACommand(str(int(param)+5))
-        self.writeCCommand("D", "A")
-        self.writeACommand("SP")
-        self.writeCCommand("AD", "A-D")
-        #e1
-        #2
-        self.writeACommand("R2")
-        self.writeCCommand("A", "D")
-        #e2
-        #3 LCL=SP
+        print(str(int(param)+5))
+        self.writeCCommand("D", "A") #5+n in D
+        self.writeACommand("SP") #load SP
+        self.writeCCommand("A", "M", None)
+        self.writeCCommand("D", "A-D") #in D = SP-n-5
+        self.writeACommand("R2") #ARG
+        self.writeCCommand("M", "D") #ARG = ^^
+        #LCL=SP
         self.writeACommand("SP")
         self.writeCCommand("D", "M")
         self.writeACommand("R1")
         self.writeCCommand("M", "D")
-        #e3
+        #goto fname
         self.writeACommand(name)
         self.writeCCommand('0', None, 'JMP')
         self.writeLabel(label[:-1])#(label{i})
@@ -143,8 +146,8 @@ class CodeWriter(object):
         #end1
         #2 RET = *(Frame - 5)
         self.writeACommand("5")
-        self.writeCCommand("A", "D-A")
-        self.writeCCommand("D", "A") #de ref 312 here
+        self.writeCCommand("A", "D-A") #frame still loaded in D
+        self.writeCCommand("D", "A") #de ref 312 here ??error could be here!!
         self.writeACommand("R14") #return is R14 1000 here????
         self.writeCCommand("M", "D")
         #end2
@@ -364,6 +367,8 @@ class CodeWriter(object):
             self.__m_outFile.writelines(jump)
         self.__m_outFile.writelines("\n")
 
+    def writeComment(self, comment):
+        self.__m_outFile.writelines("// {} \n".format(comment))
 
     #close resources
     def close(self):
