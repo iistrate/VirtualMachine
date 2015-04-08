@@ -40,6 +40,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// add 
 @SP
 AM=M-1
 @SP
@@ -86,6 +87,7 @@ A=M
 M=1
 @SP
 AM=M+1
+// sub 
 @SP
 AM=M-1
 @SP

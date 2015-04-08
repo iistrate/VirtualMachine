@@ -35,6 +35,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// add 
 @SP
 AM=M-1
 @SP
@@ -51,6 +52,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// not 
 @SP
 AM=M-1
 @SP
@@ -73,6 +75,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// add 
 @SP
 AM=M-1
 @SP
@@ -100,6 +103,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// sub 
 @SP
 AM=M-1
 @SP
@@ -116,57 +120,55 @@ A=M
 M=D
 @SP
 AM=M+1
+// Frame = LCL 
 @R1
 D=M
 @R15
 M=D
+// RET = *(Frame - 5) 
 @5
 A=D-A
-D=A
+D=M
 @R14
 M=D
-@0
-D=A
-@R2
-D=D+M
-@R13
-M=D
+// *ARG = pop() 
 @SP
 AM=M-1
 @SP
 A=M
 D=M
-@R13
-A=M
-M=D
 @R2
-M=M+1
-D=M
-@SP
 A=M
 M=D
-@SP
-M=D
+// SP = ARG+1 
+@R2
+AM=M+1
+D=M
+// that 
 @R15
 AM=M-1
 D=M
 @R4
 M=D
+// this 
 @R15
 AM=M-1
 D=M
 @R3
 M=D
+// argument 
 @R15
 AM=M-1
 D=M
 @R2
 M=D
+// local 
 @R15
 AM=M-1
 D=M
 @R1
 M=D
+// jump to return 
 @R14
 A=M
 0;JMP

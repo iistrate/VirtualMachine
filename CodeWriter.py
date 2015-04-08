@@ -36,7 +36,8 @@ class CodeWriter(object):
         
         if hasSys:
         #init stack to 256 and call Sys
-            self.writeInit()
+            #self.writeInit()
+            pass
             
 
     
@@ -63,22 +64,31 @@ class CodeWriter(object):
     #write assembly for arithmetic commands
     def writeArithmetic(self, command):
         if command == "add":
+            self.writeComment("add");
             self.doBinary("D+A") #D=D+A
         elif command == "sub":
+            self.writeComment("sub");
             self.doBinary("A-D") #D=A-D
         elif command == "eq":
+            self.writeComment("eq");
             self.doDestJump("D", "JEQ")
         elif command == "gt":            
+            self.writeComment("gt");
             self.doDestJump("D", "JGT")
         elif command == "lt":
+            self.writeComment("lt");
             self.doDestJump("D", "JLT")
         elif command == "and":
+            self.writeComment("and");
             self.doBinary("D&A") #D=D&A
         elif command == "or":
+            self.writeComment("or");
             self.doBinary("D|A") #D=D&A
         elif command == "neg":
+            self.writeComment("neg");
             self.doUnary("-D") #D=-D
         elif command == "not":
+            self.writeComment("not");
             self.doUnary("!D") #D=!D
 
     #write assembly for push or pop
@@ -100,19 +110,52 @@ class CodeWriter(object):
              self.pushConstToStack(0)
 
     def writeCall(self, name, param):
-        label = self.writeLabelSymbol("RETURN")#@label{i}
         #push label
+        self.writeComment("push label");
+        label = self.writeLabelSymbol("RETURN")#@label{i}
         self.writeCCommand("D", "A") #address to D
         self.putDintoRAM("SP")
         self.incStackP()  
         #end push label
-        self.pushFromRAM("local", 0) #push local
-        self.pushFromRAM("argument", 0) #push arg
-        self.pushFromRAM("this", 0) #push this
-        self.pushFromRAM("that", 0) #push that
+
+        #push in 262 261
+        self.writeACommand("R1")
+        self.writeCCommand("D", "M")
+        self.writeCCommand("A", "M")
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("M","D")
+        self.incStackP()
+        #
+        #push in 262 261
+        self.writeACommand("R2")
+        self.writeCCommand("D", "M")
+        self.writeCCommand("A", "M")
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("M","D")
+        self.incStackP()
+        #
+        #push in 263 3000
+        self.writeACommand("R3")
+        self.writeCCommand("D", "M")
+        self.writeCCommand("A", "M")
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("M","D")
+        self.incStackP()
+        #
+        #push in 262 4000
+        self.writeACommand("R4")
+        self.writeCCommand("D", "M")
+        self.writeCCommand("A", "M")
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("M","D")
+        self.incStackP()
         #ARG = (SP-n-5)
+        self.writeComment("ARG = (SP-n-5)")
         self.writeACommand(str(int(param)+5))
-        print(str(int(param)+5))
         self.writeCCommand("D", "A") #5+n in D
         self.writeACommand("SP") #load SP
         self.writeCCommand("A", "M", None)
@@ -120,11 +163,14 @@ class CodeWriter(object):
         self.writeACommand("R2") #ARG
         self.writeCCommand("M", "D") #ARG = ^^
         #LCL=SP
+        self.writeComment("LCL=SP");
         self.writeACommand("SP")
-        self.writeCCommand("D", "M")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("D", "A")
         self.writeACommand("R1")
         self.writeCCommand("M", "D")
         #goto fname
+        self.writeComment("goto fname")
         self.writeACommand(name)
         self.writeCCommand('0', None, 'JMP')
         self.writeLabel(label[:-1])#(label{i})
@@ -139,36 +185,48 @@ class CodeWriter(object):
 
     def writeReturn(self):
         #1 Frame = LCL
+        self.writeComment("Frame = LCL")
         self.writeACommand("R1")
         self.writeCCommand("D", "M") 
         self.writeACommand("R15") #frame
         self.writeCCommand("M", "D") #address of R1 in R13 (frame)
         #end1
         #2 RET = *(Frame - 5)
+        self.writeComment("RET = *(Frame - 5)")
         self.writeACommand("5")
         self.writeCCommand("A", "D-A") #frame still loaded in D
-        self.writeCCommand("D", "A") #de ref 312 here ??error could be here!!
+        self.writeCCommand("D", "M") #de ref 312 here ??error could be here!!
         self.writeACommand("R14") #return is R14 1000 here????
         self.writeCCommand("M", "D")
         #end2
         #3 *ARG = pop()
-        self.popToRam("argument", 0)
+        self.writeComment("*ARG = pop()")
+        self.decStackP()
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M") #stack to D
+        self.writeCCommand("D", "M") #stack to D
+        self.writeACommand("R2")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("M", "D")   
         #end3
         #4 SP = ARG+1
+        self.writeComment("SP = ARG+1");
         self.writeACommand("R2")
         self.writeCCommand("M", "M+1")
         self.writeCCommand("D", "M")
         self.writeACommand("SP")
-        self.writeCCommand("A", "M")
-        self.writeCCommand("M", "D")
-        self.writeACommand("SP")
         self.writeCCommand("M", "D")
         #end4
+        self.writeComment("that");
         self.writeFrame("R4") #that
+        self.writeComment("this");
         self.writeFrame("R3") #this
+        self.writeComment("argument");
         self.writeFrame("R2") #argument       
+        self.writeComment("local");
         self.writeFrame("R1") #local
         #jump to return
+        self.writeComment("jump to return");
         self.writeACommand("R14")
         self.writeCCommand("A", "M") #bam
         self.writeCCommand("0", None, "JMP")
@@ -290,7 +348,6 @@ class CodeWriter(object):
         self.popToRegister("D")
         #put D value into local/temp/arg address 300+offset
         self.putDintoRAM("R13")
-
 
     #take what is in segment + index and push it to SP
     def pushFromRAM(self, segment, index):

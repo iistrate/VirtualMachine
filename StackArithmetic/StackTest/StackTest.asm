@@ -12,6 +12,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// eq 
 @SP
 AM=M-1
 @SP
@@ -63,6 +64,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// eq 
 @SP
 AM=M-1
 @SP
@@ -114,6 +116,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// eq 
 @SP
 AM=M-1
 @SP
@@ -165,6 +168,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// lt 
 @SP
 AM=M-1
 @SP
@@ -216,6 +220,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// lt 
 @SP
 AM=M-1
 @SP
@@ -267,6 +272,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// lt 
 @SP
 AM=M-1
 @SP
@@ -318,6 +324,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// gt 
 @SP
 AM=M-1
 @SP
@@ -369,6 +376,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// gt 
 @SP
 AM=M-1
 @SP
@@ -420,6 +428,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// gt 
 @SP
 AM=M-1
 @SP
@@ -478,6 +487,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// add 
 @SP
 AM=M-1
 @SP
@@ -501,6 +511,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// sub 
 @SP
 AM=M-1
 @SP
@@ -517,6 +528,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// neg 
 @SP
 AM=M-1
 @SP
@@ -528,6 +540,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// and 
 @SP
 AM=M-1
 @SP
@@ -551,6 +564,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// or 
 @SP
 AM=M-1
 @SP
@@ -567,6 +581,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// not 
 @SP
 AM=M-1
 @SP

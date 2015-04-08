@@ -1,4 +1,5 @@
 (Sys.init)
+// push label 
 @RETURN1
 D=A
 @SP
@@ -6,60 +7,53 @@ A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R1
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R2
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R3
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R4
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
+// ARG = (SP-n-5) 
 @5
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
+// LCL=SP 
 @SP
-D=M
+A=M
+D=A
 @R1
 M=D
+// goto fname 
 @Sys.main
 0;JMP
 (RETURN1)
@@ -88,6 +82,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// push label 
 @RETURN2
 D=A
 @SP
@@ -95,60 +90,53 @@ A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R1
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R2
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R3
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R4
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
+// ARG = (SP-n-5) 
 @6
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
+// LCL=SP 
 @SP
-D=M
+A=M
+D=A
 @R1
 M=D
+// goto fname 
 @Sys.add12
 0;JMP
 (RETURN2)
@@ -173,57 +161,57 @@ A=M
 M=D
 @SP
 AM=M+1
+// Frame = LCL 
 @R1
 D=M
 @R15
 M=D
+// RET = *(Frame - 5) 
 @5
 A=D-A
-D=A
+D=M
 @R14
 M=D
-@0
-D=A
-@R2
-D=D+M
-@R13
-M=D
+// *ARG = pop() 
 @SP
 AM=M-1
 @SP
 A=M
 D=M
-@R13
+@R2
 A=M
 M=D
+// SP = ARG+1 
 @R2
 M=M+1
 D=M
 @SP
-A=M
 M=D
-@SP
-M=D
+// that 
 @R15
 AM=M-1
 D=M
 @R4
 M=D
+// this 
 @R15
 AM=M-1
 D=M
 @R3
 M=D
+// argument 
 @R15
 AM=M-1
 D=M
 @R2
 M=D
+// local 
 @R15
 AM=M-1
 D=M
 @R1
 M=D
+// jump to return 
 @R14
 A=M
 0;JMP
@@ -267,6 +255,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// add 
 @SP
 AM=M-1
 @SP
@@ -283,61 +272,62 @@ A=M
 M=D
 @SP
 AM=M+1
+// Frame = LCL 
 @R1
 D=M
 @R15
 M=D
+// RET = *(Frame - 5) 
 @5
 A=D-A
-D=A
+D=M
 @R14
 M=D
-@0
-D=A
-@R2
-D=D+M
-@R13
-M=D
+// *ARG = pop() 
 @SP
 AM=M-1
 @SP
 A=M
 D=M
-@R13
+@R2
 A=M
 M=D
+// SP = ARG+1 
 @R2
 M=M+1
 D=M
 @SP
-A=M
 M=D
-@SP
-M=D
+// that 
 @R15
 AM=M-1
 D=M
 @R4
 M=D
+// this 
 @R15
 AM=M-1
 D=M
 @R3
 M=D
+// argument 
 @R15
 AM=M-1
 D=M
 @R2
 M=D
+// local 
 @R15
 AM=M-1
 D=M
 @R1
 M=D
+// jump to return 
 @R14
 A=M
 0;JMP
 (Sys.init)
+// push label 
 @RETURN3
 D=A
 @SP
@@ -345,60 +335,53 @@ A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R1
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R2
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R3
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R4
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
+// ARG = (SP-n-5) 
 @5
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
+// LCL=SP 
 @SP
-D=M
+A=M
+D=A
 @R1
 M=D
+// goto fname 
 @Sys.main
 0;JMP
 (RETURN3)
@@ -427,6 +410,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// push label 
 @RETURN4
 D=A
 @SP
@@ -434,60 +418,53 @@ A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R1
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R2
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R3
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
-@0
-D=A
 @R4
-D=D+M
-A=D
 D=M
+A=M
 @SP
 A=M
 M=D
 @SP
 AM=M+1
+// ARG = (SP-n-5) 
 @6
 D=A
 @SP
-AD=A-D
+A=M
+D=A-D
 @R2
-A=D
+M=D
+// LCL=SP 
 @SP
-D=M
+A=M
+D=A
 @R1
 M=D
+// goto fname 
 @Sys.add12
 0;JMP
 (RETURN4)
@@ -512,57 +489,57 @@ A=M
 M=D
 @SP
 AM=M+1
+// Frame = LCL 
 @R1
 D=M
 @R15
 M=D
+// RET = *(Frame - 5) 
 @5
 A=D-A
-D=A
+D=M
 @R14
 M=D
-@0
-D=A
-@R2
-D=D+M
-@R13
-M=D
+// *ARG = pop() 
 @SP
 AM=M-1
 @SP
 A=M
 D=M
-@R13
+@R2
 A=M
 M=D
+// SP = ARG+1 
 @R2
 M=M+1
 D=M
 @SP
-A=M
 M=D
-@SP
-M=D
+// that 
 @R15
 AM=M-1
 D=M
 @R4
 M=D
+// this 
 @R15
 AM=M-1
 D=M
 @R3
 M=D
+// argument 
 @R15
 AM=M-1
 D=M
 @R2
 M=D
+// local 
 @R15
 AM=M-1
 D=M
 @R1
 M=D
+// jump to return 
 @R14
 A=M
 0;JMP
@@ -606,6 +583,7 @@ A=M
 M=D
 @SP
 AM=M+1
+// add 
 @SP
 AM=M-1
 @SP
@@ -622,57 +600,57 @@ A=M
 M=D
 @SP
 AM=M+1
+// Frame = LCL 
 @R1
 D=M
 @R15
 M=D
+// RET = *(Frame - 5) 
 @5
 A=D-A
-D=A
+D=M
 @R14
 M=D
-@0
-D=A
-@R2
-D=D+M
-@R13
-M=D
+// *ARG = pop() 
 @SP
 AM=M-1
 @SP
 A=M
 D=M
-@R13
+@R2
 A=M
 M=D
+// SP = ARG+1 
 @R2
 M=M+1
 D=M
 @SP
-A=M
 M=D
-@SP
-M=D
+// that 
 @R15
 AM=M-1
 D=M
 @R4
 M=D
+// this 
 @R15
 AM=M-1
 D=M
 @R3
 M=D
+// argument 
 @R15
 AM=M-1
 D=M
 @R2
 M=D
+// local 
 @R15
 AM=M-1
 D=M
 @R1
 M=D
+// jump to return 
 @R14
 A=M
 0;JMP
