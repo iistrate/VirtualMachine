@@ -1,4 +1,8 @@
-(Sys.init)
+@256
+D=A
+@SP
+M=D
+// stack to 256, now call Sys.init 
 // push label 
 @RETURN1
 D=A
@@ -54,9 +58,68 @@ D=A
 @R1
 M=D
 // goto fname 
-@Sys.main
+@Sys.init
 0;JMP
 (RETURN1)
+(Sys.init)
+// push label 
+@RETURN2
+D=A
+@SP
+A=M
+M=D
+@SP
+AM=M+1
+@R1
+D=M
+A=M
+@SP
+A=M
+M=D
+@SP
+AM=M+1
+@R2
+D=M
+A=M
+@SP
+A=M
+M=D
+@SP
+AM=M+1
+@R3
+D=M
+A=M
+@SP
+A=M
+M=D
+@SP
+AM=M+1
+@R4
+D=M
+A=M
+@SP
+A=M
+M=D
+@SP
+AM=M+1
+// ARG = (SP-n-5) 
+@5
+D=A
+@SP
+A=M
+D=A-D
+@R2
+M=D
+// LCL=SP 
+@SP
+A=M
+D=A
+@R1
+M=D
+// goto fname 
+@Sys.main
+0;JMP
+(RETURN2)
 @1
 D=A
 @R5
@@ -83,7 +146,7 @@ M=D
 @SP
 AM=M+1
 // push label 
-@RETURN2
+@RETURN3
 D=A
 @SP
 A=M
@@ -139,7 +202,7 @@ M=D
 // goto fname 
 @Sys.add12
 0;JMP
-(RETURN2)
+(RETURN3)
 @0
 D=A
 @R5
@@ -328,7 +391,7 @@ A=M
 0;JMP
 (Sys.init)
 // push label 
-@RETURN3
+@RETURN4
 D=A
 @SP
 A=M
@@ -384,7 +447,7 @@ M=D
 // goto fname 
 @Sys.main
 0;JMP
-(RETURN3)
+(RETURN4)
 @1
 D=A
 @R5
@@ -411,7 +474,7 @@ M=D
 @SP
 AM=M+1
 // push label 
-@RETURN4
+@RETURN5
 D=A
 @SP
 A=M
@@ -467,7 +530,7 @@ M=D
 // goto fname 
 @Sys.add12
 0;JMP
-(RETURN4)
+(RETURN5)
 @0
 D=A
 @R5

@@ -36,8 +36,7 @@ class CodeWriter(object):
         
         if hasSys:
         #init stack to 256 and call Sys
-            #self.writeInit()
-            pass
+            self.writeInit()
             
 
     
@@ -109,6 +108,14 @@ class CodeWriter(object):
              #push enough 0 constants on the stack
              self.pushConstToStack(0)
 
+    def writeCallPush(self, register):
+        self.writeCCommand("D", "M")
+        self.writeCCommand("A", "M")
+        self.writeACommand("SP")
+        self.writeCCommand("A", "M")
+        self.writeCCommand("M","D")
+        self.incStackP()
+
     def writeCall(self, name, param):
         #push label
         self.writeComment("push label");
@@ -117,42 +124,17 @@ class CodeWriter(object):
         self.putDintoRAM("SP")
         self.incStackP()  
         #end push label
-
         #push in 262 261
-        self.writeACommand("R1")
-        self.writeCCommand("D", "M")
-        self.writeCCommand("A", "M")
-        self.writeACommand("SP")
-        self.writeCCommand("A", "M")
-        self.writeCCommand("M","D")
-        self.incStackP()
+        self.writeCallPush("R1");
         #
         #push in 262 261
-        self.writeACommand("R2")
-        self.writeCCommand("D", "M")
-        self.writeCCommand("A", "M")
-        self.writeACommand("SP")
-        self.writeCCommand("A", "M")
-        self.writeCCommand("M","D")
-        self.incStackP()
+        self.writeCallPush("R2");
         #
         #push in 263 3000
-        self.writeACommand("R3")
-        self.writeCCommand("D", "M")
-        self.writeCCommand("A", "M")
-        self.writeACommand("SP")
-        self.writeCCommand("A", "M")
-        self.writeCCommand("M","D")
-        self.incStackP()
+        self.writeCallPush("R3");
         #
         #push in 262 4000
-        self.writeACommand("R4")
-        self.writeCCommand("D", "M")
-        self.writeCCommand("A", "M")
-        self.writeACommand("SP")
-        self.writeCCommand("A", "M")
-        self.writeCCommand("M","D")
-        self.incStackP()
+        self.writeCallPush("R4");
         #ARG = (SP-n-5)
         self.writeComment("ARG = (SP-n-5)")
         self.writeACommand(str(int(param)+5))
